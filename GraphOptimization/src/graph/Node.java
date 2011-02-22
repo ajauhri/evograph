@@ -5,6 +5,8 @@ import java.util.Map;
 
 public class Node {
 	public int id;
+	int x;
+	int y;
 	HashMap<Integer, Edge> edges = new HashMap<Integer, Edge>();
 	
 	public Node(int id) {
@@ -28,5 +30,25 @@ public class Node {
 		for (Map.Entry<Integer, Edge> entry : edges.entrySet())
 		    System.out.print(entry.getKey() + ", ");
 		System.out.println();
+	}
+
+	public int getX() {
+		return x;
+	}
+
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public void setY(int y) {
+		this.y = y;
+	}
+	
+	public Object[] getEdges() {
+		return edges.values().toArray();
 	}
 }

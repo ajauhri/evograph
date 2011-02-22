@@ -1,4 +1,4 @@
-package core;
+package io;
 
 import graph.Graph;
 
@@ -9,9 +9,9 @@ import java.io.FileInputStream;
 //import java.io.FileWriter;
 import java.io.InputStreamReader;
 
-public class FileToGraph implements Runnable {
+public class FileToGraph {// implements Runnable {
 	
-	protected String rootPath = "src/metadata/";
+	protected String rootPath = "../src/metadata/";
 	protected String inputFilePath;
 	protected int numberOfNodes;
 	protected BufferedReader br;
@@ -21,13 +21,8 @@ public class FileToGraph implements Runnable {
 	public FileToGraph(String inputFilePath) {
 		this.inputFilePath = inputFilePath;
 	}
-	
-	protected String runTestCase() {
-		return null;
-	}
 
-	@Override
-	public void run() {
+	public Graph createGraph() {
 		startTime = System.currentTimeMillis();
 		try {
 			FileInputStream fstream = new FileInputStream(rootPath + inputFilePath);
@@ -41,12 +36,14 @@ public class FileToGraph implements Runnable {
 				for(int j = 1; j < connectedNodes.length; j++)
 					graph.createEdge(Integer.parseInt(connectedNodes[0]), Integer.parseInt(connectedNodes[j]));
 			}
-			graph.print();
 		    in.close();
 			long elapsedTime = System.currentTimeMillis() - startTime;
 			System.out.println("Completed in " + elapsedTime + " ms");
+			graph.print();
+			return graph;
 	    } catch (Exception e) {
 	    	System.err.println("Error: " + e.getMessage());
+	    	return null;
 	    }	
 	}
 }
