@@ -2,13 +2,16 @@ package graph;
 
 import java.util.Vector;
 
+import evo.Fitness;
+
 public class Graph {
-	
+	Fitness fitness;
 	Vector<Node> nodes = new Vector<Node>(); //ID of the node is the position in the vector
 	
 	public Graph(int numberOfNodes) {
 		for (int i = 0; i < numberOfNodes; i++)
 			nodes.add(new Node(i));
+		fitness = new Fitness(this);
 	}
 	
 	public void createEdge(int fromId, int toId) {
@@ -27,5 +30,21 @@ public class Graph {
 	
 	public Node getNodeAt(int pos) {
 		return nodes.get(pos);
+	}
+	
+	public void calculateFitness() {
+		fitness.calculate();
+	}
+	
+	public static double distanceFormula(int x, int y, int toX, int toY) {
+		return Math.sqrt(Math.pow((x - toX), 2) + Math.pow((y - toY), 2));
+	}
+	
+	public Graph copy() {
+		try {
+			return (Graph) this.clone();
+		} catch (CloneNotSupportedException e) {
+			return null;
+		}
 	}
 }

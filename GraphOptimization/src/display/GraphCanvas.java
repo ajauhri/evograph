@@ -20,16 +20,14 @@ public class GraphCanvas extends Canvas {
 			drawNode(g, applet.graph.getNodeAt(i));
 		for (int i = 0; i < numberOfNodes; i++)
 			drawNodeEdges(g, applet.graph.getNodeAt(i));
-		
+		applet.graph.calculateFitness();
 	}
 	
 	public void drawNode(Graphics g, Node node) {
-		int x = (int) (Math.random() * 400);
-		int y = (int) (Math.random() * 400);
+		int x = node.getX();
+		int y = node.getY();
 		g.drawOval(x, y, 10, 10); // get dimensions from node
 		g.drawString("" + node.id, x, y);
-		node.setX(x);
-		node.setY(y);
 	}
 	
 	public void drawNodeEdges(Graphics g, Node node) {
@@ -38,6 +36,7 @@ public class GraphCanvas extends Canvas {
 		Object[] edges = node.getEdges();
 		for (Object e : edges) {
 			g.drawLine(x, y, ((Edge) e).to.getX(), ((Edge) e).to.getY());
+			((Edge) e).computeEdgeLength(x, y);
 		}
 	}
 }
