@@ -4,7 +4,7 @@ import java.util.Vector;
 
 public class Graph {
 	
-	Vector<Node> nodes = new Vector<Node>();
+	Vector<Node> nodes = new Vector<Node>(); //ID of the node is the position in the vector
 	
 	public Graph(int numberOfNodes) {
 		for (int i = 0; i < numberOfNodes; i++)
@@ -19,5 +19,13 @@ public class Graph {
 		int numNodes = nodes.size();
 		for(int i = 0; i < numNodes; i++)
 			nodes.get(i).print();
+	}
+	
+	public int getNumberOfNodes() {
+		return nodes.size();
+	}
+	
+	public Node getNodeAt(int pos) {
+		return nodes.get(pos);
 	}
 }
