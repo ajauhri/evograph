@@ -7,27 +7,27 @@ import graph.Node;
 public class Fitness {
 	Graph graph;
 	static double optimalEdgeLength = 50.0; 
-
+	public double value; //Fitness value
 	
 	public Fitness(Graph graph) {
 		this.graph = graph;
 	}
 	
 	public void calculate() {
-		double sumOfEdgeLengths = sumEdgeLengths();
-	}
-	
-	public double sumEdgeLengths() {
-		double sum = 0;
+		double sumOfEdgeLengths = 0;
+		int totalNumberOfEdges = 0;
 		int numberOfNodes = graph.getNumberOfNodes();
 		for (int i = 0; i < numberOfNodes; i++){
 			Node node = graph.getNodeAt(i);
 			Object[] edges = node.getEdges();
 			for (Object e : edges) {
-				sum += ((Edge) e).edgeLength;
+				double edgeLength = ((Edge) e).edgeLength;
+				//totalDeviationFromOptimal += Math.abs(edgeLength - optimalEdgeLength);
+				sumOfEdgeLengths += edgeLength;
+				totalNumberOfEdges++;
 			}
 		}
-		return sum;
+		value = Math.abs((sumOfEdgeLengths / totalNumberOfEdges) - optimalEdgeLength); //0 is optimal
 	}
 	
 	public int getFitnessValue() {
