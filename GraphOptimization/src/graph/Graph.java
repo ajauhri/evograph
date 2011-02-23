@@ -1,11 +1,10 @@
 package graph;
 
 import java.util.Vector;
-
 import evo.Fitness;
 
-public class Graph {
-	Fitness fitness;
+public class Graph implements Cloneable {
+	public Fitness fitness;
 	Vector<Node> nodes = new Vector<Node>(); //ID of the node is the position in the vector
 	
 	public Graph(int numberOfNodes) {
@@ -42,8 +41,10 @@ public class Graph {
 	
 	public Graph copy() {
 		try {
+			//for(int i=0; this.getNumberOfNodes(); i++) 
 			return (Graph) this.clone();
 		} catch (CloneNotSupportedException e) {
+			System.out.println("CLONE NOT SUPPORTED");
 			return null;
 		}
 	}

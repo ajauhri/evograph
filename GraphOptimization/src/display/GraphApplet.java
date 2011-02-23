@@ -1,5 +1,6 @@
 package display;
 
+import evo.GeneticAlgorithm;
 import graph.Graph;
 
 import java.applet.Applet;
@@ -16,6 +17,9 @@ public class GraphApplet extends Applet {
 	}
 	
 	public void init() {
+		GeneticAlgorithm ga = new GeneticAlgorithm();
+		graph = ga.getFittestIndividual();
+		
 		this.resize(500, 600);
 		canvas = new GraphCanvas(this);
 		
