@@ -1,6 +1,9 @@
 package graph;
 
-public class Edge {
+import java.io.Serializable;
+
+public class Edge implements Serializable {
+	private static final long serialVersionUID = 1L;
 	public Node to;
 	public double edgeLength;
 	

@@ -27,19 +27,23 @@ public class GeneticAlgorithm {
 	}
 
 	public void initializePopulation() {
-		// population = new Population(populationSize);
 		for (int i = 0; i < populationSize; i++) {
-			Graph individual = (Graph) graph.copy();
-			initializeIndividual(individual);
-			individual.calculateFitness();
-			//double individualFitness = individual.fitness.value;
-			population.add(individual);
+			Graph individual;
+			try {
+				individual = (Graph) graph.copy();
+				initializeIndividual(individual);
+				individual.calculateFitness();
+				population.add(individual);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			//double individualFitness = individual.fitness;
 		}
 		sortPopulationByFitness();
 		
 		
 		for (int i = 0; i < populationSize; i++) {
-			System.out.println("Graph " + i + " fitness is " + population.get(i).fitness.value);
+			System.out.println("Graph " + i + " fitness is " + population.get(i).getFitness());
 		}
 	}
 	
@@ -52,27 +56,27 @@ public class GeneticAlgorithm {
 	}
 
 	public void initializeIndividual(Graph individual) {
-		int numberOfNodes = graph.getNumberOfNodes();
-		System.out.println(individual);
+		int numberOfNodes = individual.getNumberOfNodes();
 		for (int i = 0; i < numberOfNodes; i++) {
 			individual.getNodeAt(i).setXandY((int) (Math.random() * 400), (int) (Math.random() * 400));
 		}
 		for (int i = 0; i < numberOfNodes; i++) {
-			Node node = graph.getNodeAt(i);
+			Node node = individual.getNodeAt(i);
 			Object[] edges = node.getEdges();
-			for (Object e : edges)
+			for (Object e : edges) {
 				((Edge) e).computeEdgeLength(node.getX(), node.getY());
+			}
 		}
 	}
 	
 	class FitnessComparator implements Comparator<Graph> {
 		public int compare(Graph g1, Graph g2) {
-			if (g2.fitness.value == g1.fitness.value)
+			if (g2.getFitness() == g1.getFitness())
 				return 0;
-			else if (g2.fitness.value > g1.fitness.value)
-				return 1;
-			else
+			else if (g2.getFitness() > g1.getFitness())
 				return -1;
+			else
+				return 1;
 		}
 	}
 }
