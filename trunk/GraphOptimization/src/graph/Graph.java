@@ -39,19 +39,21 @@ public class Graph implements Serializable {
 	}
 	
 	public void calculateFitness() {
-		double sumOfEdgeLengths = 0;
-		int totalNumberOfEdges = 0;
+		//double sumOfEdgeLengths = 0;
+		//int totalNumberOfEdges = 0;
+		fitness = 0;
 		int numberOfNodes = getNumberOfNodes();
-		for (int i = 0; i < numberOfNodes; i++){
+		for (int i = 0; i < numberOfNodes; i++) {
 			Node node = getNodeAt(i);
 			Object[] edges = node.getEdges();
 			for (Object e : edges) {
 				double edgeLength = ((Edge) e).edgeLength;
-				sumOfEdgeLengths += edgeLength;
-				totalNumberOfEdges++;
+				fitness += Math.abs(edgeLength - optimalEdgeLength);
+				//sumOfEdgeLengths += edgeLength;
+				//totalNumberOfEdges++;
 			}
 		}
-		fitness = Math.abs((sumOfEdgeLengths / totalNumberOfEdges) - optimalEdgeLength); //0 is optimal
+		//fitness = Math.abs((sumOfEdgeLengths / totalNumberOfEdges) - optimalEdgeLength); //0 is optimal
 	}
 
 	public double getFitness() {
