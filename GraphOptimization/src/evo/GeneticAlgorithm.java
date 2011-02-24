@@ -13,8 +13,10 @@ import java.util.Vector;
 public class GeneticAlgorithm {
 	static final String fileName = "test1.rgf";
 	static final int populationSize = 100;
+	static final int elitism = 10;
+	public int generation = 0;
 	Vector<Graph> population = new Vector<Graph>();
-	Graph graph;
+	Graph motherGraph;
 
 	public GeneticAlgorithm() {
 		createGraph();
@@ -23,14 +25,14 @@ public class GeneticAlgorithm {
 
 	public void createGraph() {
 		FileToGraph fileToGraph = new FileToGraph(fileName);
-		graph = fileToGraph.createGraph();
+		motherGraph = fileToGraph.createGraph();
 	}
 
 	public void initializePopulation() {
 		for (int i = 0; i < populationSize; i++) {
 			Graph individual;
 			try {
-				individual = (Graph) graph.copy();
+				individual = (Graph) motherGraph.copy();
 				initializeIndividual(individual);
 				individual.calculateFitness();
 				population.add(individual);
@@ -40,15 +42,40 @@ public class GeneticAlgorithm {
 			//double individualFitness = individual.fitness;
 		}
 		sortPopulationByFitness();
-		
-		
-		for (int i = 0; i < populationSize; i++) {
-			System.out.println("Graph " + i + " fitness is " + population.get(i).getFitness());
-		}
+		printPopulation();
 	}
 	
 	public Graph getFittestIndividual() {
 		return population.get(0);
+	}
+	
+	public void nextGeneration() {
+		generation++;
+		//Vector<Graph> newPopulation = new Vector<Graph>();
+		//for(int i = 0; i < elitism; i++)
+		//	newPopulation.add(i, population.get(i));
+		for(int i = elitism; i < populationSize; i++) {
+			Graph eliteParent =  population.get((int) (Math.random() * elitism));
+			Graph parent2 = population.get(i);
+			recombine(eliteParent, parent2);
+			parent2.calculateFitness();
+		}
+		sortPopulationByFitness();
+		printPopulation();
+		
+	}
+	
+	public void mutate() {
+		
+	}
+	
+	public void recombine(Graph parent1, Graph parent2) {
+		int crossoverPoint = (int) (Math.random() * (parent1.getNumberOfNodes() - 1)) + 1;
+		for(int i = 0; i < crossoverPoint; i++) {
+			Node node = parent1.getNodeAt(i);
+			parent2.getNodeAt(i).setXandY(node.getX(), node.getY());
+		}
+		calculateEdgeLengths(parent2);
 	}
 	
 	public void sortPopulationByFitness() {
@@ -60,13 +87,23 @@ public class GeneticAlgorithm {
 		for (int i = 0; i < numberOfNodes; i++) {
 			individual.getNodeAt(i).setXandY((int) (Math.random() * 400), (int) (Math.random() * 400));
 		}
+		calculateEdgeLengths(individual);
+	}
+	
+	public void calculateEdgeLengths(Graph graph) {
+		int numberOfNodes = graph.getNumberOfNodes();
 		for (int i = 0; i < numberOfNodes; i++) {
-			Node node = individual.getNodeAt(i);
+			Node node = graph.getNodeAt(i);
 			Object[] edges = node.getEdges();
 			for (Object e : edges) {
 				((Edge) e).computeEdgeLength(node.getX(), node.getY());
 			}
 		}
+	}
+	
+	public void printPopulation() {
+		for (int i = 0; i < populationSize; i++)
+			System.out.println("Generation " + generation + " Graph " + i + " fitness is " + population.get(i).getFitness());
 	}
 	
 	class FitnessComparator implements Comparator<Graph> {
