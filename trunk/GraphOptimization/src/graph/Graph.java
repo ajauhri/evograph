@@ -1,16 +1,23 @@
 package graph;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Vector;
-import evo.Fitness;
 
-public class Graph implements Cloneable {
-	public Fitness fitness;
+public class Graph implements Serializable {
+	private static final long serialVersionUID = 1L;
+	//public Fitness fitness;
+	double fitness;
+	static double optimalEdgeLength = 50.0; 
+
 	Vector<Node> nodes = new Vector<Node>(); //ID of the node is the position in the vector
 	
 	public Graph(int numberOfNodes) {
 		for (int i = 0; i < numberOfNodes; i++)
 			nodes.add(new Node(i));
-		fitness = new Fitness(this);
 	}
 	
 	public void createEdge(int fromId, int toId) {
@@ -32,20 +39,39 @@ public class Graph implements Cloneable {
 	}
 	
 	public void calculateFitness() {
-		fitness.calculate();
+		double sumOfEdgeLengths = 0;
+		int totalNumberOfEdges = 0;
+		int numberOfNodes = getNumberOfNodes();
+		for (int i = 0; i < numberOfNodes; i++){
+			Node node = getNodeAt(i);
+			Object[] edges = node.getEdges();
+			for (Object e : edges) {
+				double edgeLength = ((Edge) e).edgeLength;
+				sumOfEdgeLengths += edgeLength;
+				totalNumberOfEdges++;
+			}
+		}
+		fitness = Math.abs((sumOfEdgeLengths / totalNumberOfEdges) - optimalEdgeLength); //0 is optimal
+	}
+
+	public double getFitness() {
+		return fitness;
+	}
+
+	public void setFitness(double fitness) {
+		this.fitness = fitness;
 	}
 	
 	public static double distanceFormula(int x, int y, int toX, int toY) {
 		return Math.sqrt(Math.pow((x - toX), 2) + Math.pow((y - toY), 2));
 	}
 	
-	public Graph copy() {
-		try {
-			//for(int i=0; this.getNumberOfNodes(); i++) 
-			return (Graph) this.clone();
-		} catch (CloneNotSupportedException e) {
-			System.out.println("CLONE NOT SUPPORTED");
-			return null;
-		}
+	public Graph copy() throws Exception { // AWESOME DEEP-COPY
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ObjectOutputStream oos = new ObjectOutputStream(baos);
+		oos.writeObject(this);
+		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+		ObjectInputStream ois = new ObjectInputStream(bais);
+		return (Graph) ois.readObject();
 	}
 }
