@@ -46,7 +46,7 @@ public class GraphApplet extends Applet {
 		setGenerationLabel(ga.generation);
 		graph = ga.getFittestIndividual();
 		setFitnessLabel(graph.getFitness());
-		canvas.repaint();	
+		canvas.drawGraph();
 	}
 	
 	public void setFitnessLabel(double fitness) {
