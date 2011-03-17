@@ -14,13 +14,16 @@ public class GraphCanvas extends Canvas {
 		this.applet = applet;
 	}
 
+	public void drawGraph() {
+		this.repaint();
+	}
+	
 	public void paint(Graphics g) {
 		int numberOfNodes = applet.graph.getNumberOfNodes();
 		for (int i = 0; i < numberOfNodes; i++)
 			drawNode(g, applet.graph.getNodeAt(i));
 		for (int i = 0; i < numberOfNodes; i++)
 			drawNodeEdges(g, applet.graph.getNodeAt(i));
-		applet.graph.calculateFitness();
 	}
 	
 	public void drawNode(Graphics g, Node node) {

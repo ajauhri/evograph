@@ -61,8 +61,7 @@ public class GeneticAlgorithm {
 			parent2.calculateFitness();
 		}
 		sortPopulationByFitness();
-		printPopulation();
-		
+		printPopulation();	
 	}
 	
 	public void mutate() {

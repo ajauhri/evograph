@@ -1,5 +1,6 @@
 package graph;
 
+import java.awt.geom.Line2D;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
@@ -42,18 +43,39 @@ public class Graph implements Serializable {
 		//double sumOfEdgeLengths = 0;
 		//int totalNumberOfEdges = 0;
 		fitness = 0;
+		fitness += getNumberOfEdgeCrossings();
+		//fitness = Math.abs((sumOfEdgeLengths / totalNumberOfEdges) - optimalEdgeLength); //0 is optimal
+	}
+	
+	public int getNumberOfEdgeCrossings() {
+		int edgeCrossings = 0;
 		int numberOfNodes = getNumberOfNodes();
-		for (int i = 0; i < numberOfNodes; i++) {
-			Node node = getNodeAt(i);
-			Object[] edges = node.getEdges();
-			for (Object e : edges) {
-				double edgeLength = ((Edge) e).edgeLength;
-				fitness += Math.abs(edgeLength - optimalEdgeLength);
-				//sumOfEdgeLengths += edgeLength;
-				//totalNumberOfEdges++;
+		for (int i = 0; i < numberOfNodes - 1; i++) {
+			Node nodei = getNodeAt(i);
+			Object[] edgesi = nodei.getEdges();
+			for (int j = i + 1; j < numberOfNodes; j++) {
+				Node nodej = getNodeAt(j);
+				Object[] edgesj = nodej.getEdges();
+				for (Object edgei : edgesi) {
+					for (Object edgej : edgesj) {
+						if (checkEdgeCrossing(nodei, ((Edge) edgei).to, nodej, ((Edge) edgej).to)) {
+							//System.out.println(nodei.id + " to " + ((Edge) edgei).to.id + " is intersecting with " + nodej.id + " to " + ((Edge) edgej).to.id); 
+							edgeCrossings++;
+						}
+					}
+				}
 			}
 		}
-		//fitness = Math.abs((sumOfEdgeLengths / totalNumberOfEdges) - optimalEdgeLength); //0 is optimal
+		return edgeCrossings;
+	}
+	
+	/**
+	 * Check if the edge between a-b intersects with the edge between c-d
+	 */
+	public boolean checkEdgeCrossing(Node a, Node b, Node c, Node d) {
+		if (b == c || d == a || b == d)
+			return false;
+		return Line2D.linesIntersect(a.x, a.y, b.x, b.y, c.x, c.y, d.x, d.y);
 	}
 
 	public double getFitness() {
