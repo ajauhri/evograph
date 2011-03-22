@@ -22,23 +22,23 @@ public class GraphApplet extends Applet {
 	Button nextGenerationButton;
 	
 	public void init() {
-	    nextGenerationButton = new Button("Next Generation");
+		nextGenerationButton = new Button("Next Generation");
 		fitnessLabel = new Label("");
 		generationLabel = new Label("Generation 0000");
 		ga = new GeneticAlgorithm();
-		
+
 		graph = ga.getFittestIndividual();
 		setFitnessLabel(graph.getFitness());
-		
-		
+
 		this.resize(500, 600);
 		canvas = new GraphCanvas(this);
-		
-	    setLayout(new BorderLayout());
-	    add("North", fitnessLabel);
-	    add("Center", canvas);
-	    add("West", generationLabel);
-	    add("South", nextGenerationButton);
+
+		setLayout(new BorderLayout());
+		add("North", fitnessLabel);
+
+		add("Center", canvas);
+		add("West", generationLabel);
+		add("South", nextGenerationButton);
 	}
 	
 	public void nextGeneration() {
