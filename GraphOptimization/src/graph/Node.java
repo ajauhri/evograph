@@ -9,10 +9,12 @@ public class Node implements Serializable {
 	public int id;
 	int x;
 	int y;
+	public int numberOfCrossovers;
 	HashMap<Integer, Edge> edges = new HashMap<Integer, Edge>();
 
 	public Node(int id) {
 		this.id = id;
+		this.numberOfCrossovers = 0;
 	}
 
 	public void createEdge(Node n) {
