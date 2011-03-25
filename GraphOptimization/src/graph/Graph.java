@@ -12,6 +12,7 @@ public class Graph implements Serializable {
 	private static final long serialVersionUID = 1L;
 	// public Fitness fitness;
 	double fitness;
+	public int numberOfEdgeCrossings = 0;
 	static double optimalEdgeLength = 50.0;
 	
 	Vector<Node> nodes = new Vector<Node>(); // ID of the node is the position
@@ -44,22 +45,24 @@ public class Graph implements Serializable {
 		// double sumOfEdgeLengths = 0;
 		// int totalNumberOfEdges = 0;
 		fitness = 0;
-		fitness += getNumberOfEdgeCrossings();
+		calculateNumberOfEdgeCrossings();
+		calculateCrossoversToEdgesRatios();
+		fitness += numberOfEdgeCrossings;
 		// fitness = Math.abs((sumOfEdgeLengths / totalNumberOfEdges) -
 		// optimalEdgeLength); //0 is optimal
 	}
 
-	public int getNumberOfEdgeCrossings() {
-		int edgeCrossings = 0;
+	public void calculateNumberOfEdgeCrossings() {
+		numberOfEdgeCrossings = 0;
 		int numberOfNodes = getNumberOfNodes();
 		for (int i = 0; i < numberOfNodes - 1; i++)
 			getNodeAt(i).numberOfCrossovers = 0;
 		for (int i = 0; i < numberOfNodes - 1; i++) {
 			Node nodei = getNodeAt(i);
-			Object[] edgesi = nodei.getEdges();
+			Object[] edgesi = nodei.getEdgesOut();
 			for (int j = i + 1; j < numberOfNodes; j++) {
 				Node nodej = getNodeAt(j);
-				Object[] edgesj = nodej.getEdges();
+				Object[] edgesj = nodej.getEdgesOut();
 				for (Object edgei : edgesi) {
 					for (Object edgej : edgesj) {
 						if (checkEdgeCrossing(nodei, ((Edge) edgei).to, nodej,
@@ -67,13 +70,19 @@ public class Graph implements Serializable {
 							// System.out.println(nodei.id + " to " + ((Edge)
 							// edgei).to.id + " is intersecting with " +
 							// nodej.id + " to " + ((Edge) edgej).to.id);
-							edgeCrossings++;
+							numberOfEdgeCrossings++;
 						}
 					}
 				}
 			}
 		}
-		return edgeCrossings;
+	}
+	
+	public void calculateCrossoversToEdgesRatios() {
+		int numberOfNodes = getNumberOfNodes();
+		for (int i = 0; i < numberOfNodes - 1; i++) {
+			getNodeAt(i).calculateCrossoversToEdgesRatio();
+		}
 	}
 
 	/**
@@ -112,6 +121,5 @@ public class Graph implements Serializable {
 		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
 		ObjectInputStream ois = new ObjectInputStream(bais);
 		return (Graph) ois.readObject();
-	}
-	
+	}	
 }

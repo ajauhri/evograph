@@ -36,7 +36,7 @@ public class GraphCanvas extends Canvas {
 	public void drawNodeEdges(Graphics g, Node node) {
 		int x = node.getX();
 		int y = node.getY();
-		Object[] edges = node.getEdges();
+		Object[] edges = node.getEdgesOut();
 		for (Object e : edges) {
 			g.drawLine(x, y, ((Edge) e).to.getX(), ((Edge) e).to.getY());
 			((Edge) e).computeEdgeLength(x, y);
