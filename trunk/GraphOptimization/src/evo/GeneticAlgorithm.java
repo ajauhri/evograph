@@ -59,22 +59,24 @@ public class GeneticAlgorithm {
 			Graph parent2 = population.get(i);
 			//TODO: Assign probabilty to determine recombination/mutation
 			recombine(eliteParent, parent2);
+			parent2.calculateFitness(); //Needs to calculate fitness in order to have an effective heuristic
 			mutate(parent2);
 			parent2.calculateFitness();
 		}
 		sortPopulationByFitness();
-		printPopulation();	
+		System.out.println("Average fitness: " + calculateAverageFitness());
+		//printPopulation();
 	}
 	
 	public void mutate(Graph g) {
-		Node highestCrossovers = g.getNodeAt(0);
+		Node nodeWithHighestCrossoverRatio = g.getNodeAt(0);
 		for (int i = 1; i < g.getNumberOfNodes(); i++) {
-			if (highestCrossovers.numberOfCrossovers <= g.getNodeAt(i).numberOfCrossovers)
-				highestCrossovers = g.getNodeAt(i);
+			if (nodeWithHighestCrossoverRatio.getCrossoversToEdgesRatio() <= g.getNodeAt(i).getCrossoversToEdgesRatio())
+				nodeWithHighestCrossoverRatio = g.getNodeAt(i);
 		}
-		int x = highestCrossovers.getX();
-		int y = highestCrossovers.getY(); 
-		highestCrossovers.setXandY(randomInt(-50,50)+x, randomInt(-50,50)+y);
+		int x = nodeWithHighestCrossoverRatio.getX();
+		int y = nodeWithHighestCrossoverRatio.getY(); 
+		nodeWithHighestCrossoverRatio.setXandY(randomInt(-50,50)+x, randomInt(-50,50)+y);
 	}
 	
 	public void recombine(Graph parent1, Graph parent2) {
@@ -89,6 +91,14 @@ public class GeneticAlgorithm {
 	public void sortPopulationByFitness() {
 		Collections.sort(population, new FitnessComparator());
 	}
+	
+	public double calculateAverageFitness() {
+		double sumOfFitnesses = 0;
+		for(int i = 0; i < populationSize; i++) {
+			sumOfFitnesses += population.get(i).getFitness();
+		}
+		return sumOfFitnesses / populationSize;
+	}
 
 	public void initializeIndividual(Graph individual) {
 		int numberOfNodes = individual.getNumberOfNodes();
@@ -102,7 +112,7 @@ public class GeneticAlgorithm {
 		int numberOfNodes = graph.getNumberOfNodes();
 		for (int i = 0; i < numberOfNodes; i++) {
 			Node node = graph.getNodeAt(i);
-			Object[] edges = node.getEdges();
+			Object[] edges = node.getEdgesOut();
 			for (Object e : edges) {
 				((Edge) e).computeEdgeLength(node.getX(), node.getY());
 			}

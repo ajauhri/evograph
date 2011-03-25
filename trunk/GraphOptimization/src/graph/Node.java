@@ -10,7 +10,9 @@ public class Node implements Serializable {
 	int x;
 	int y;
 	public int numberOfCrossovers;
-	HashMap<Integer, Edge> edges = new HashMap<Integer, Edge>();
+	public float crossoversToEdgesRatio;
+	HashMap<Integer, Edge> edgesOut = new HashMap<Integer, Edge>();
+	HashMap<Integer, Edge> edgesIn = new HashMap<Integer, Edge>();
 
 	public Node(int id) {
 		this.id = id;
@@ -18,20 +20,42 @@ public class Node implements Serializable {
 	}
 
 	public void createEdge(Node n) {
-		edges.put(n.id, new Edge(n));
+		Edge edge = new Edge(n);
+		edgesOut.put(n.id, edge);
+		n.edgesIn.put(this.id, edge);
 	}
 
-	public boolean hasEdge(Node n) {
-		return edges.containsKey(n.id);
+	public boolean hasEdgeOut(Node n) {
+		return edgesOut.containsKey(n.id);
 	}
 
-	public boolean hasEdge(int i) {
-		return edges.containsKey(i);
+	public boolean hasEdgeOut(int i) {
+		return edgesOut.containsKey(i);
 	}
 
+	public boolean hasEdgeIn(Node n) {
+		return edgesIn.containsKey(n.id);
+	}
+
+	public boolean hasEdgeIn(int i) {
+		return edgesIn.containsKey(i);
+	}
+	
+	public int numberOfEdgesInAndOut() {
+		return edgesOut.size() + edgesIn.size();
+	}
+
+	public void calculateCrossoversToEdgesRatio() {
+		crossoversToEdgesRatio = numberOfCrossovers / numberOfEdgesInAndOut();
+	}
+	
+	public float getCrossoversToEdgesRatio() {
+		return crossoversToEdgesRatio;
+	}
+	
 	public void print() {
 		System.out.print("Node " + this.id + " is connected to ");
-		for (Map.Entry<Integer, Edge> entry : edges.entrySet())
+		for (Map.Entry<Integer, Edge> entry : edgesOut.entrySet())
 			System.out.print(entry.getKey() + ", ");
 		System.out.println();
 	}
@@ -52,8 +76,8 @@ public class Node implements Serializable {
 		this.y = y;
 	}
 
-	public Object[] getEdges() {
-		return edges.values().toArray();
+	public Object[] getEdgesOut() {
+		return edgesOut.values().toArray();
 	}
 
 	public void setXandY(int x, int y) {
