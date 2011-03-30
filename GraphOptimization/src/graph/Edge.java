@@ -11,7 +11,8 @@ public class Edge implements Serializable {
 		this.to = to;
 	}	
 	
-	public void computeEdgeLength(int x, int y) {
+	public double computeEdgeLength(int x, int y) {
 		edgeLength = Graph.distanceFormula(x, y, to.x, to.y);
+		return edgeLength;
 	}
 }
