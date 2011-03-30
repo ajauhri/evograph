@@ -1,6 +1,5 @@
 package evo;
 
-import graph.Edge;
 import graph.Graph;
 import graph.Node;
 
@@ -42,7 +41,7 @@ public class GeneticAlgorithm {
 			//double individualFitness = individual.fitness;
 		}
 		sortPopulationByFitness();
-		printPopulation();
+		//printPopulation();
 	}
 	
 	public Graph getFittestIndividual() {
@@ -69,23 +68,19 @@ public class GeneticAlgorithm {
 	}
 	
 	public void mutate(Graph g) {
-		Node nodeWithHighestCrossoverRatio = g.getNodeAt(0);
-		for (int i = 1; i < g.getNumberOfNodes(); i++) {
-			if (nodeWithHighestCrossoverRatio.getCrossoversToEdgesRatio() <= g.getNodeAt(i).getCrossoversToEdgesRatio())
-				nodeWithHighestCrossoverRatio = g.getNodeAt(i);
-		}
+		Node nodeWithHighestCrossoverRatio = g.getNodeWithHighestCrossoverRatio();
 		int x = nodeWithHighestCrossoverRatio.getX();
 		int y = nodeWithHighestCrossoverRatio.getY(); 
 		nodeWithHighestCrossoverRatio.setXandY(randomInt(-50,50)+x, randomInt(-50,50)+y);
 	}
 	
 	public void recombine(Graph parent1, Graph parent2) {
-		int crossoverPoint = (int) (Math.random() * (parent1.getNumberOfNodes() - 1)) + 1;
-		for(int i = 0; i < crossoverPoint; i++) {
-			Node node = parent1.getNodeAt(i);
-			parent2.getNodeAt(i).setXandY(node.getX(), node.getY());
-		}
-		calculateEdgeLengths(parent2);
+//		int crossoverPoint = (int) (Math.random() * (parent1.numberOfNodes - 1)) + 1;
+//		for(int i = 0; i < crossoverPoint; i++) {
+//			Node node = parent1.getNodeAt(i);
+//			parent2.getNodeAt(i).setXandY(node.getX(), node.getY());
+//		}
+//		parent2.calculateEdgeLengths();
 	}
 	
 	public void sortPopulationByFitness() {
@@ -101,22 +96,11 @@ public class GeneticAlgorithm {
 	}
 
 	public void initializeIndividual(Graph individual) {
-		int numberOfNodes = individual.getNumberOfNodes();
+		int numberOfNodes = individual.numberOfNodes;
 		for (int i = 0; i < numberOfNodes; i++) {
 			individual.getNodeAt(i).setXandY((int) (Math.random() * 400), (int) (Math.random() * 400));
 		}
-		calculateEdgeLengths(individual);
-	}
-	
-	public void calculateEdgeLengths(Graph graph) {
-		int numberOfNodes = graph.getNumberOfNodes();
-		for (int i = 0; i < numberOfNodes; i++) {
-			Node node = graph.getNodeAt(i);
-			Object[] edges = node.getEdgesOut();
-			for (Object e : edges) {
-				((Edge) e).computeEdgeLength(node.getX(), node.getY());
-			}
-		}
+		individual.calculateEdgeLengths();
 	}
 	
 	public void printPopulation() {

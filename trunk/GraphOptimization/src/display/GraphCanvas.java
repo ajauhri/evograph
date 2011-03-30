@@ -4,6 +4,7 @@ import graph.Edge;
 import graph.Node;
 
 import java.awt.Canvas;
+import java.awt.Color;
 import java.awt.Graphics;
 
 @SuppressWarnings("serial")
@@ -12,14 +13,19 @@ public class GraphCanvas extends Canvas {
 	
 	public GraphCanvas(GraphApplet applet) {
 		this.applet = applet;
+		this.setBackground(Color.WHITE);
 	}
 
 	public void drawGraph() {
 		this.repaint();
 	}
 	
+	public double getArea() {
+		return this.getWidth() * this.getHeight();
+	}
+	
 	public void paint(Graphics g) {
-		int numberOfNodes = applet.graph.getNumberOfNodes();
+		int numberOfNodes = applet.graph.numberOfNodes;
 		for (int i = 0; i < numberOfNodes; i++)
 			drawNode(g, applet.graph.getNodeAt(i));
 		for (int i = 0; i < numberOfNodes; i++)

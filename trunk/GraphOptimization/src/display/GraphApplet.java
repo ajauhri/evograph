@@ -30,7 +30,7 @@ public class GraphApplet extends Applet {
 		graph = ga.getFittestIndividual();
 		setFitnessLabel(graph.getFitness());
 
-		this.resize(500, 600);
+		this.resize(800, 800);
 		canvas = new GraphCanvas(this);
 
 		setLayout(new BorderLayout());

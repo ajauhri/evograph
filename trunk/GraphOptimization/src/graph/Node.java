@@ -9,6 +9,8 @@ public class Node implements Serializable {
 	public int id;
 	int x;
 	int y;
+	double edgeFitness;
+	public double fitness;
 	public int numberOfCrossovers;
 	public float crossoversToEdgesRatio;
 	HashMap<Integer, Edge> edgesOut = new HashMap<Integer, Edge>();
@@ -45,12 +47,36 @@ public class Node implements Serializable {
 		return edgesOut.size() + edgesIn.size();
 	}
 
+	public double calculateFitness() {
+		calculateCrossoversToEdgesRatio();
+		calculateEdgeLengths();
+		double offsetA = 0.1;
+		double offsetB = 0.1;
+		fitness = (edgeFitness + offsetA) * (crossoversToEdgesRatio + offsetB) - (offsetA * offsetB);
+		return fitness;
+	}
+	
 	public void calculateCrossoversToEdgesRatio() {
 		crossoversToEdgesRatio = numberOfCrossovers / numberOfEdgesInAndOut();
 	}
 	
-	public float getCrossoversToEdgesRatio() {
-		return crossoversToEdgesRatio;
+	public void calculateEdgeLengths() {
+		edgeFitness = 0;
+		Object[] edges = this.getEdgesOut();
+		for (Object e : edges) {
+			double edgeLength = ((Edge) e).computeEdgeLength(this.getX(), this.getY());
+			edgeFitness += calculateEdgeFitness(edgeLength);
+		}
+		edges = this.getEdgesIn();
+		for (Object e : edges) {
+			double edgeLength = ((Edge) e).computeEdgeLength(this.getX(), this.getY());
+			edgeFitness += calculateEdgeFitness(edgeLength);	
+		}
+		edgeFitness /= numberOfEdgesInAndOut();
+	}
+
+	public double calculateEdgeFitness(double edgeLength) {
+		return ((Math.abs(Graph.optimalEdgeLength - edgeLength) + Graph.optimalEdgeLength) / Graph.optimalEdgeLength) - 1;
 	}
 	
 	public void print() {
@@ -78,6 +104,10 @@ public class Node implements Serializable {
 
 	public Object[] getEdgesOut() {
 		return edgesOut.values().toArray();
+	}
+
+	public Object[] getEdgesIn() {
+		return edgesIn.values().toArray();
 	}
 
 	public void setXandY(int x, int y) {
