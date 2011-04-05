@@ -11,7 +11,7 @@ import java.util.Vector;
 public class Graph implements Serializable {
 	private static final long serialVersionUID = 1L;
 	// public Fitness fitness;
-	double fitness;
+	public double fitness;
 	//public int numberOfEdgeCrossings = 0;
 	public int numberOfNodes;
 	public static double optimalEdgeLength = 50;
@@ -50,10 +50,11 @@ public class Graph implements Serializable {
 		// int totalNumberOfEdges = 0;
 		fitness = 0;
 		calculateNumberOfEdgeCrossings();
-		calculateCrossoversToEdgesRatios();
-
+		//calculateCrossoversToEdgesRatios();
+		
 		for (int i = 0; i < numberOfNodes; i++) {
 			fitness += this.getNodeAt(i).calculateFitness();
+			//System.out.println("fitness = " + fitness);
 		}
 		//fitness = edgeFitness * (numberOfEdgeCrossings + 1);
 		// fitness = Math.abs((sumOfEdgeLengths / totalNumberOfEdges) -
@@ -117,14 +118,6 @@ public class Graph implements Serializable {
 			d.numberOfCrossovers++;
 		}
 		return crossing;
-	}
-
-	public double getFitness() {
-		return fitness;
-	}
-
-	public void setFitness(double fitness) {
-		this.fitness = fitness;
 	}
 
 	public static double distanceFormula(int x, int y, int toX, int toY) {
