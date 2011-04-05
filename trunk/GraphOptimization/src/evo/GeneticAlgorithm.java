@@ -11,8 +11,8 @@ import java.util.Vector;
 
 public class GeneticAlgorithm {
 	static final String fileName = "test1.rgf";
-	static final int populationSize = 100;
-	static final int elitism = 10;
+	static final int populationSize = 10;
+	static final int elitism = 1;
 	public int generation = 0;
 	Vector<Graph> population = new Vector<Graph>();
 	Graph motherGraph;
@@ -76,8 +76,8 @@ public class GeneticAlgorithm {
 	}
 	
 	public void recombine(Graph parent1, Graph parent2) {
-		int numberOfNodes = parent1.numberOfNodes;
-		for (int i = 0; i < numberOfNodes; i++) {
+		
+		for (int i = 0; i < parent1.numberOfNodes; i++) {
 			Node node1 = parent1.getNodeAt(i);
 			Node node2 = parent2.getNodeAt(i);
 			Node node = selectFittestNode(node1, node2);

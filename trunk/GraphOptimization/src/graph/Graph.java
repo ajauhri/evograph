@@ -70,7 +70,7 @@ public class Graph implements Serializable {
 	
 	public void calculateNumberOfEdgeCrossings() {
 		int numberOfEdgeCrossings = 0;
-		for (int i = 0; i < numberOfNodes - 1; i++)
+		for (int i = 0; i < numberOfNodes; i++)
 			getNodeAt(i).numberOfCrossovers = 0;
 		for (int i = 0; i < numberOfNodes - 1; i++) {
 			Node nodei = getNodeAt(i);

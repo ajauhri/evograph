@@ -57,6 +57,7 @@ public class Node implements Serializable {
 	}
 	
 	public void calculateCrossoversToEdgesRatio() {
+		//System.out.println("Numberofcrossover: " + numberOfCrossovers + " numberofEdgesInandOut: "+ numberOfEdgesInAndOut());
 		crossoversToEdgesRatio = numberOfCrossovers / numberOfEdgesInAndOut();
 	}
 	
