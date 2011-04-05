@@ -28,7 +28,7 @@ public class GraphApplet extends Applet {
 		ga = new GeneticAlgorithm();
 
 		graph = ga.getFittestIndividual();
-		setFitnessLabel(graph.getFitness());
+		setFitnessLabel(graph.fitness);
 
 		this.resize(800, 800);
 		canvas = new GraphCanvas(this);
@@ -42,10 +42,12 @@ public class GraphApplet extends Applet {
 	}
 	
 	public void nextGeneration() {
-		ga.nextGeneration();
-		setGenerationLabel(ga.generation);
+		for(int i = 0; i < 10; i++) {
+			ga.nextGeneration();
+			setGenerationLabel(ga.generation);
+		}
 		graph = ga.getFittestIndividual();
-		setFitnessLabel(graph.getFitness());
+		setFitnessLabel(graph.fitness);
 		canvas.drawGraph();
 	}
 	

@@ -45,6 +45,7 @@ public class GeneticAlgorithm {
 	}
 	
 	public Graph getFittestIndividual() {
+		System.out.print(" Best individual: "+ population.get(0).fitness);
 		return population.get(0);
 	}
 	
@@ -75,12 +76,26 @@ public class GeneticAlgorithm {
 	}
 	
 	public void recombine(Graph parent1, Graph parent2) {
+		int numberOfNodes = parent1.numberOfNodes;
+		for (int i = 0; i < numberOfNodes; i++) {
+			Node node1 = parent1.getNodeAt(i);
+			Node node2 = parent2.getNodeAt(i);
+			Node node = selectFittestNode(node1, node2);
+			parent2.getNodeAt(i).setXandY(node.getX(), node.getY());
+		}
 //		int crossoverPoint = (int) (Math.random() * (parent1.numberOfNodes - 1)) + 1;
 //		for(int i = 0; i < crossoverPoint; i++) {
 //			Node node = parent1.getNodeAt(i);
 //			parent2.getNodeAt(i).setXandY(node.getX(), node.getY());
 //		}
-//		parent2.calculateEdgeLengths();
+	}
+	
+	public Node selectFittestNode(Node node1, Node node2) {
+		double random = Math.random() * (node1.fitness + node2.fitness);
+		if (random < node1.fitness)
+			return node2;
+		else
+			return node1;
 	}
 	
 	public void sortPopulationByFitness() {
@@ -90,7 +105,7 @@ public class GeneticAlgorithm {
 	public double calculateAverageFitness() {
 		double sumOfFitnesses = 0;
 		for(int i = 0; i < populationSize; i++) {
-			sumOfFitnesses += population.get(i).getFitness();
+			sumOfFitnesses += population.get(i).fitness;
 		}
 		return sumOfFitnesses / populationSize;
 	}
@@ -105,14 +120,14 @@ public class GeneticAlgorithm {
 	
 	public void printPopulation() {
 		for (int i = 0; i < populationSize; i++)
-			System.out.println("Generation " + generation + " Graph " + i + " fitness is " + population.get(i).getFitness());
+			System.out.println("Generation " + generation + " Graph " + i + " fitness is " + population.get(i).fitness);
 	}
 	
 	class FitnessComparator implements Comparator<Graph> {
 		public int compare(Graph g1, Graph g2) {
-			if (g2.getFitness() == g1.getFitness())
+			if (g2.fitness == g1.fitness)
 				return 0;
-			else if (g2.getFitness() > g1.getFitness())
+			else if (g2.fitness > g1.fitness)
 				return -1;
 			else
 				return 1;
