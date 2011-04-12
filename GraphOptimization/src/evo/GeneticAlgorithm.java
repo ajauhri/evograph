@@ -11,8 +11,8 @@ import java.util.Vector;
 
 public class GeneticAlgorithm {
 	static final String fileName = "test1.rgf";
-	static final int populationSize = 10;
-	static final int elitism = 1;
+	static final int populationSize = 100;
+	static final int elitism = 10;
 	public int generation = 0;
 	Vector<Graph> population = new Vector<Graph>();
 	Graph motherGraph;
@@ -123,6 +123,10 @@ public class GeneticAlgorithm {
 			System.out.println("Generation " + generation + " Graph " + i + " fitness is " + population.get(i).fitness);
 	}
 	
+	public static int randomInt(int min, int max) {
+		 return (int)Math.random()*(max-min+1) + min;
+	}
+	
 	class FitnessComparator implements Comparator<Graph> {
 		public int compare(Graph g1, Graph g2) {
 			if (g2.fitness == g1.fitness)
@@ -132,9 +136,5 @@ public class GeneticAlgorithm {
 			else
 				return 1;
 		}
-	}
-	
-	public static int randomInt(int min, int max) {
-		 return (int)Math.random()*(max-min+1) + min;
 	}
 }

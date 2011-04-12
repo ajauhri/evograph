@@ -36,6 +36,7 @@ public class FileToGraph {// implements Runnable {
 				for(int j = 1; j < connectedNodes.length; j++)
 					graph.createEdge(Integer.parseInt(connectedNodes[0]), Integer.parseInt(connectedNodes[j]));
 			}
+			graph.printEdgeMatrix();
 		    in.close();
 			long elapsedTime = System.currentTimeMillis() - startTime;
 			System.out.println("Completed in " + elapsedTime + " ms");
