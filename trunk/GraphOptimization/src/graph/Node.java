@@ -1,6 +1,9 @@
 package graph;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,21 +13,25 @@ public class Node implements Serializable {
 	int x;
 	int y;
 	double edgeFitness;
+	double angularResolution; //angularFitness
 	public double fitness;
 	public int numberOfCrossovers;
 	public float crossoversToEdgesRatio;
 	HashMap<Integer, Edge> edgesOut = new HashMap<Integer, Edge>();
 	HashMap<Integer, Edge> edgesIn = new HashMap<Integer, Edge>();
+	public Graph graph;
 
-	public Node(int id) {
+	public Node(int id, Graph graph) {
+		this.graph = graph;
 		this.id = id;
 		this.numberOfCrossovers = 0;
 	}
 
-	public void createEdge(Node n) {
-		Edge edge = new Edge(n);
+	public Edge createEdge(Node n) {
+		Edge edge = new Edge(n, this);
 		edgesOut.put(n.id, edge);
 		n.edgesIn.put(this.id, edge);
+		return edge;
 	}
 
 	public boolean hasEdgeOut(Node n) {
@@ -50,10 +57,70 @@ public class Node implements Serializable {
 	public double calculateFitness() {
 		calculateCrossoversToEdgesRatio();
 		calculateEdgeLengths();
+		calculateAngularResolution();
 		double offsetA = 0.1;
 		double offsetB = 0.1;
 		fitness = (edgeFitness + offsetA) * (crossoversToEdgesRatio + offsetB) - (offsetA * offsetB);
 		return fitness;
+	}
+	
+	public void calculateAngularResolution() {
+		angularResolution = 0;
+		ArrayList<Double> edgesByAngle = new ArrayList<Double>();
+		Object[] edges = this.getEdgesOut();
+		System.out.println("this.id = " + this.id);
+		for (Object e : edges) {
+			Edge edge = (Edge) e;
+			edgesByAngle.add(edge.angle);
+			System.out.println("from " + edge.from.id + " to " + edge.to.id + ", angle " + toDegrees(edge.angle));
+		}
+		edges = this.getEdgesIn();
+		for (Object e : edges) {
+			Edge edge = (Edge) e;
+			if (this.graph.edges[edge.to.id][edge.from.id] == null) {
+				double angle = edge.angle > Math.PI ? edge.angle - Math.PI : edge.angle + Math.PI;
+				edgesByAngle.add(angle);
+				System.out.println("from " + edge.from.id + " to " + edge.to.id + " makes angle " + toDegrees(angle));
+			} else {
+				System.out.println("There was already an edge from " + edge.from.id + " to " + edge.to.id);
+			}
+		}
+		Collections.sort(edgesByAngle);
+		double minimumAngle = ((Math.PI * 2 * 4) / this.numberOfEdgesInAndOut());
+		for (int i = 0; i < edgesByAngle.size() - 1; i++) {
+			double angle = edgesByAngle.get(i + 1) - edgesByAngle.get(i);
+			if(angle < minimumAngle) {
+				angularResolution += minimumAngle - angle;
+			}
+		}
+		System.out.println("angularResolution = " + angularResolution);
+	}
+	
+	public double toDegrees(double radians) {
+		return (radians/(2*Math.PI))*360;
+	}
+	
+	public void calculateEdgeAngles() {
+		Object[] edges = this.getEdgesOut();
+		for (Object e : edges) {
+			calculateEdgeAngle((Edge) e);
+		}
+	}
+	
+	public void calculateEdgeAngle(Edge edge) {
+		double angle;
+		try {
+			angle = Math.atan(((double) (edge.to.y - this.y))/((double) (edge.to.x - this.x)));
+			if(edge.to.x > edge.from.x)
+				angle += Math.PI;
+			angle += (Math.PI / 2);
+		} catch (ArithmeticException exc) {
+			if (edge.to.y > this.y)
+				angle = (Math.PI / 2);
+			else
+				angle = 3 * (Math.PI / 2);
+		}
+        edge.angle = angle;
 	}
 	
 	public void calculateCrossoversToEdgesRatio() {
@@ -115,4 +182,15 @@ public class Node implements Serializable {
 		this.x = x;
 		this.y = y;
 	}
+
+//	class AngularResolutionComparator implements Comparator<Edge> {
+//		public int compare(Edge e1, Edge e2) {
+//			if (e1.angle == e2.angle)
+//				return 0;
+//			else if (e1.angle < e2.angle)
+//				return -1;
+//			else
+//				return 1;
+//		}
+//	}
 }

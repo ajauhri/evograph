@@ -12,6 +12,7 @@ public class Graph implements Serializable {
 	private static final long serialVersionUID = 1L;
 	// public Fitness fitness;
 	public double fitness;
+	public Edge[][] edges;
 	//public int numberOfEdgeCrossings = 0;
 	public int numberOfNodes;
 	public static double optimalEdgeLength = 50;
@@ -20,9 +21,10 @@ public class Graph implements Serializable {
 												// in the vector
 
 	public Graph(int numberOfNodes) {
+		edges = new Edge[numberOfNodes][numberOfNodes];
 		this.numberOfNodes = numberOfNodes;
 		for (int i = 0; i < numberOfNodes; i++)
-			nodes.add(new Node(i));
+			nodes.add(new Node(i, this));
 		calculateOptimalEdgeLength();
 	}
 
@@ -32,13 +34,23 @@ public class Graph implements Serializable {
 	}
 	
 	public void createEdge(int fromId, int toId) {
-		nodes.get(fromId).createEdge(nodes.get(toId));
+		Edge edge = nodes.get(fromId).createEdge(nodes.get(toId));
+		edges[fromId][toId] = edge;
 	}
 
 	public void print() {
 		int numNodes = nodes.size();
 		for (int i = 0; i < numNodes; i++)
 			nodes.get(i).print();
+	}
+	
+	public void printEdgeMatrix() {
+		for(int i = 0; i < numberOfNodes; i++) {
+			for(int j = 0; j < numberOfNodes; j++) {
+				System.out.print(edges[i][j] == null ? "0 " : "1 ");
+			}
+			System.out.println();
+		}
 	}
 
 	public Node getNodeAt(int pos) {
@@ -51,7 +63,9 @@ public class Graph implements Serializable {
 		fitness = 0;
 		calculateNumberOfEdgeCrossings();
 		//calculateCrossoversToEdgesRatios();
-		
+		for (int i = 0; i < numberOfNodes; i++) {
+			this.getNodeAt(i).calculateEdgeAngles();
+		}
 		for (int i = 0; i < numberOfNodes; i++) {
 			fitness += this.getNodeAt(i).calculateFitness();
 			//System.out.println("fitness = " + fitness);
