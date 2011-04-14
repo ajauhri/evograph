@@ -30,7 +30,7 @@ public class GraphApplet extends Applet {
 		graph = ga.getFittestIndividual();
 		setFitnessLabel(graph.fitness);
 
-		this.resize(800, 800);
+		this.resize(800, 560);
 		canvas = new GraphCanvas(this);
 
 		setLayout(new BorderLayout());
@@ -42,17 +42,18 @@ public class GraphApplet extends Applet {
 	}
 	
 	public void nextGeneration() {
-		for(int i = 0; i < 10; i++) {
+		//for(int i = 0; i < 10; i++) {
 			ga.nextGeneration();
 			setGenerationLabel(ga.generation);
-		}
+		//}
 		graph = ga.getFittestIndividual();
+		graph.printCoordinatesAndAngles();
 		setFitnessLabel(graph.fitness);
 		canvas.drawGraph();
 	}
 	
 	public void setFitnessLabel(double fitness) {
-		fitnessLabel.setText("Fitness value: " + Math.round(fitness));
+		fitnessLabel.setText("Fitness value: " + fitness);
 	}
 	
 	public void setGenerationLabel(int generation) {
