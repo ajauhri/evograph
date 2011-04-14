@@ -3,7 +3,6 @@ package graph;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,25 +53,23 @@ public class Node implements Serializable {
 		return edgesOut.size() + edgesIn.size();
 	}
 
-	public double calculateFitness() {
-		calculateCrossoversToEdgesRatio();
+	public void calculateFitness() {
+		//calculateCrossoversToEdgesRatio();
 		calculateEdgeLengths();
 		calculateAngularResolution();
-		double offsetA = 0.1;
-		double offsetB = 0.1;
-		fitness = (edgeFitness + offsetA) * (crossoversToEdgesRatio + offsetB) - (offsetA * offsetB);
-		return fitness;
+//		double offsetA = 0.1;
+//		double offsetB = 0.1;
+//		fitness = (edgeFitness + offsetA) * (crossoversToEdgesRatio + offsetB) - (offsetA * offsetB);
+//		return fitness;
 	}
 	
 	public void calculateAngularResolution() {
 		angularResolution = 0;
 		ArrayList<Double> edgesByAngle = new ArrayList<Double>();
 		Object[] edges = this.getEdgesOut();
-		System.out.println("this.id = " + this.id);
 		for (Object e : edges) {
 			Edge edge = (Edge) e;
 			edgesByAngle.add(edge.angle);
-			System.out.println("from " + edge.from.id + " to " + edge.to.id + ", angle " + toDegrees(edge.angle));
 		}
 		edges = this.getEdgesIn();
 		for (Object e : edges) {
@@ -80,9 +77,6 @@ public class Node implements Serializable {
 			if (this.graph.edges[edge.to.id][edge.from.id] == null) {
 				double angle = edge.angle > Math.PI ? edge.angle - Math.PI : edge.angle + Math.PI;
 				edgesByAngle.add(angle);
-				System.out.println("from " + edge.from.id + " to " + edge.to.id + " makes angle " + toDegrees(angle));
-			} else {
-				System.out.println("There was already an edge from " + edge.from.id + " to " + edge.to.id);
 			}
 		}
 		Collections.sort(edgesByAngle);
@@ -93,7 +87,6 @@ public class Node implements Serializable {
 				angularResolution += minimumAngle - angle;
 			}
 		}
-		System.out.println("angularResolution = " + angularResolution);
 	}
 	
 	public double toDegrees(double radians) {
@@ -110,8 +103,8 @@ public class Node implements Serializable {
 	public void calculateEdgeAngle(Edge edge) {
 		double angle;
 		try {
-			angle = Math.atan(((double) (edge.to.y - this.y))/((double) (edge.to.x - this.x)));
-			if(edge.to.x > edge.from.x)
+			angle = Math.atan(((double) (edge.to.y - edge.from.y))/((double) (edge.to.x - edge.from.x)));
+			if(edge.to.x < edge.from.x)
 				angle += Math.PI;
 			angle += (Math.PI / 2);
 		} catch (ArithmeticException exc) {
@@ -144,14 +137,40 @@ public class Node implements Serializable {
 	}
 
 	public double calculateEdgeFitness(double edgeLength) {
-		return ((Math.abs(Graph.optimalEdgeLength - edgeLength) + Graph.optimalEdgeLength) / Graph.optimalEdgeLength) - 1;
+		if (edgeLength < Graph.optimalEdgeLengthLower)
+			return (Graph.optimalEdgeLengthLower - edgeLength);
+		else if (edgeLength > Graph.optimalEdgeLengthUpper)
+			return (edgeLength - Graph.optimalEdgeLengthUpper);
+		return 0;
 	}
 	
-	public void print() {
+	public void printConnections() {
 		System.out.print("Node " + this.id + " is connected to ");
 		for (Map.Entry<Integer, Edge> entry : edgesOut.entrySet())
 			System.out.print(entry.getKey() + ", ");
 		System.out.println();
+	}
+	
+	public void printCoordinatesAndAngles() {
+		System.out.println("*** this.id = " + this.id);
+		Object[] edges = this.getEdgesOut();
+		for (Object e : edges) {
+			Edge edge = (Edge) e;
+			System.out.println("from " + edge.from.id + " to " + edge.to.id + ", angle " + toDegrees(edge.angle));
+			System.out.println(edge.from.x + "," + edge.from.y + " to " + edge.to.x + "," + edge.to.y);
+		}
+		edges = this.getEdgesIn();
+		for (Object e : edges) {
+			Edge edge = (Edge) e;
+			if (this.graph.edges[edge.to.id][edge.from.id] == null) {
+				double angle = edge.angle;// > Math.PI ? edge.angle - Math.PI : edge.angle + Math.PI;
+				System.out.println("from " + edge.from.id + " to " + edge.to.id + " makes angle " + toDegrees(angle));
+				System.out.println(edge.from.x + "," + edge.from.y + " to " + edge.to.x + "," + edge.to.y);
+			} else {
+				System.out.println("There was already an edge from " + edge.from.id + " to " + edge.to.id);
+			}
+		}
+		System.out.println("angularResolution = " + angularResolution);
 	}
 
 	public int getX() {
@@ -182,15 +201,4 @@ public class Node implements Serializable {
 		this.x = x;
 		this.y = y;
 	}
-
-//	class AngularResolutionComparator implements Comparator<Edge> {
-//		public int compare(Edge e1, Edge e2) {
-//			if (e1.angle == e2.angle)
-//				return 0;
-//			else if (e1.angle < e2.angle)
-//				return -1;
-//			else
-//				return 1;
-//		}
-//	}
 }

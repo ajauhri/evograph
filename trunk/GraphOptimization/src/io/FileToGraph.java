@@ -37,10 +37,11 @@ public class FileToGraph {// implements Runnable {
 					graph.createEdge(Integer.parseInt(connectedNodes[0]), Integer.parseInt(connectedNodes[j]));
 			}
 			graph.printEdgeMatrix();
+			graph.calculateOptimalEdgeLength();
 		    in.close();
 			long elapsedTime = System.currentTimeMillis() - startTime;
 			System.out.println("Completed in " + elapsedTime + " ms");
-			graph.print();
+			graph.printConnections();
 			return graph;
 	    } catch (Exception e) {
 	    	System.err.println("Error: " + e.getMessage());

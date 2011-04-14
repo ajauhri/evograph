@@ -60,8 +60,8 @@ public class GeneticAlgorithm {
 			//TODO: Assign probabilty to determine recombination/mutation
 			recombine(eliteParent, parent2);
 			parent2.calculateFitness(); //Needs to calculate fitness in order to have an effective heuristic
-			mutate(parent2);
-			parent2.calculateFitness();
+			//mutate(parent2);
+			//parent2.calculateFitness();
 		}
 		sortPopulationByFitness();
 		System.out.println("Average fitness: " + calculateAverageFitness());

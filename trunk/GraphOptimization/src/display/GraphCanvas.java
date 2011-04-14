@@ -6,6 +6,7 @@ import graph.Node;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
+import metadata.Constants;
 
 @SuppressWarnings("serial")
 public class GraphCanvas extends Canvas {
@@ -14,6 +15,7 @@ public class GraphCanvas extends Canvas {
 	public GraphCanvas(GraphApplet applet) {
 		this.applet = applet;
 		this.setBackground(Color.WHITE);
+		this.setSize(500, 500);
 	}
 
 	public void drawGraph() {
@@ -30,6 +32,7 @@ public class GraphCanvas extends Canvas {
 			drawNode(g, applet.graph.getNodeAt(i));
 		for (int i = 0; i < numberOfNodes; i++)
 			drawNodeEdges(g, applet.graph.getNodeAt(i));
+		this.setSize(Constants.CANVAS_WIDTH, Constants.CANVAS_HEIGHT);
 	}
 	
 	public void drawNode(Graphics g, Node node) {

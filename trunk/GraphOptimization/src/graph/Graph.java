@@ -8,15 +8,17 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Vector;
 
+import metadata.Constants;
+
 public class Graph implements Serializable {
 	private static final long serialVersionUID = 1L;
 	// public Fitness fitness;
 	public double fitness;
 	public Edge[][] edges;
-	//public int numberOfEdgeCrossings = 0;
+	public int numberOfEdgeCrossings = 0;
 	public int numberOfNodes;
-	public static double optimalEdgeLength = 50;
-	
+	public static double optimalEdgeLengthLower;
+	public static double optimalEdgeLengthUpper;
 	Vector<Node> nodes = new Vector<Node>(); // ID of the node is the position
 												// in the vector
 
@@ -25,12 +27,15 @@ public class Graph implements Serializable {
 		this.numberOfNodes = numberOfNodes;
 		for (int i = 0; i < numberOfNodes; i++)
 			nodes.add(new Node(i, this));
-		calculateOptimalEdgeLength();
+		//calculateOptimalEdgeLength();
 	}
 
 	public void calculateOptimalEdgeLength() {
-		//double canvasArea = 25000;
-		//optimalEdgeLength = Math.sqrt(canvasArea / this.getNumberOfNodes());
+		double canvasArea = Constants.CANVAS_WIDTH * Constants.CANVAS_HEIGHT;
+		double optimalEdgeLength = Math.sqrt(canvasArea / this.numberOfNodes);
+		optimalEdgeLengthLower = optimalEdgeLength * Constants.OPTIMAL_EDGE_LENGTH_LENIENCY;
+		optimalEdgeLengthUpper = optimalEdgeLength * (1 + Constants.OPTIMAL_EDGE_LENGTH_LENIENCY);
+		
 	}
 	
 	public void createEdge(int fromId, int toId) {
@@ -38,10 +43,16 @@ public class Graph implements Serializable {
 		edges[fromId][toId] = edge;
 	}
 
-	public void print() {
+	public void printCoordinatesAndAngles() {
 		int numNodes = nodes.size();
 		for (int i = 0; i < numNodes; i++)
-			nodes.get(i).print();
+			nodes.get(i).printCoordinatesAndAngles();
+	}
+	
+	public void printConnections() {
+		int numNodes = nodes.size();
+		for (int i = 0; i < numNodes; i++)
+			nodes.get(i).printConnections();
 	}
 	
 	public void printEdgeMatrix() {
@@ -66,10 +77,22 @@ public class Graph implements Serializable {
 		for (int i = 0; i < numberOfNodes; i++) {
 			this.getNodeAt(i).calculateEdgeAngles();
 		}
+		double angularResolutionSum = 0.0;
+		double edgeFitnessSum = 0.0;
+		
+		
 		for (int i = 0; i < numberOfNodes; i++) {
-			fitness += this.getNodeAt(i).calculateFitness();
+			Node node = this.getNodeAt(i);
+			node.calculateFitness();
+			angularResolutionSum += node.angularResolution;
+			edgeFitnessSum += node.edgeFitness;
+			
 			//System.out.println("fitness = " + fitness);
 		}
+		fitness = (numberOfEdgeCrossings + 1)
+				* ((angularResolutionSum * Constants.ANGULAR_RESOLUTION_MULTIPLIER) +
+						(edgeFitnessSum * Constants.EDGE_FITNESS_MULTIPLIER));
+
 		//fitness = edgeFitness * (numberOfEdgeCrossings + 1);
 		// fitness = Math.abs((sumOfEdgeLengths / totalNumberOfEdges) -
 		// optimalEdgeLength); //0 is optimal
@@ -83,7 +106,7 @@ public class Graph implements Serializable {
 	}
 	
 	public void calculateNumberOfEdgeCrossings() {
-		int numberOfEdgeCrossings = 0;
+		numberOfEdgeCrossings = 0;
 		for (int i = 0; i < numberOfNodes; i++)
 			getNodeAt(i).numberOfCrossovers = 0;
 		for (int i = 0; i < numberOfNodes - 1; i++) {
