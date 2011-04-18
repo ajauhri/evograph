@@ -1,4 +1,4 @@
-package evograph;
+	package evograph;
 
 import ga.GeneticAlgorithm;
 import graph.FileToGraph;
@@ -20,7 +20,7 @@ public class EvoGraph extends JApplet implements ActionListener {
 
 	public void init() {
 		createGUI();
-		algorithm = new GeneticAlgorithm(this, new FileToGraph("grid9.rgf").createGraph());
+		algorithm = new GeneticAlgorithm(this, new FileToGraph("octo.rgf").createGraph());
 	}
 
 	public void createGUI() {
@@ -54,11 +54,17 @@ public class EvoGraph extends JApplet implements ActionListener {
 		return canvas.getHeight();
 	}
 	
+	/** Static Helper functions **/
+	
 	public static boolean probability(double chance) {
 		return Math.random() < chance;
 	}
 
 	public static int randomInt(int min, int max) {
 		 return (int) Math.random() * (max - min + 1) + min;
+	}
+	
+	public static double toDegrees(double radians) {
+		return (radians / (2 * Math.PI)) * 360;
 	}
 }

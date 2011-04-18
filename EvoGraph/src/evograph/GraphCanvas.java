@@ -35,9 +35,9 @@ public class GraphCanvas extends Canvas {
 		for (int i = 0; i < graph.nodeInstances.length; i++) {
 			NodeInstance node = graph.nodeInstances[i];
 			g.setColor(Color.BLACK);
-			g.fillOval(node.x - 7, node.y - 7, 15, 15);
+			g.fillOval(node.x - 10, node.y - 10, 20, 20);
 			g.setColor(Color.WHITE);
-			g.drawString("" + node.id, node.x - 4, node.y + 5);
+			g.drawString("" + node.id, node.x - 8, node.y + 5);
 		}
 	}
 	
@@ -54,6 +54,5 @@ public class GraphCanvas extends Canvas {
 	
 	public void calculateOptimalEdgeLength(int numberOfNodes) {
 		optimalEdgeLength = Math.sqrt((getWidth() * getHeight())/numberOfNodes);
-		System.out.println("optimal edge length: " + optimalEdgeLength);
 	}
 }
