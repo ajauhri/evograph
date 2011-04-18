@@ -2,6 +2,9 @@ package graph;
 
 import java.awt.geom.Line2D;
 
+import evograph.EvoGraph;
+import evograph.GraphCanvas;
+
 public class GraphInstance {
 	public Graph graph;
 	public NodeInstance[] nodeInstances;
@@ -12,6 +15,25 @@ public class GraphInstance {
 		nodeInstances = new NodeInstance[graph.nodes.length];
 		for(int i = 0; i < graph.nodes.length; i++)
 			nodeInstances[i] = new NodeInstance(graph.nodes[i], graph.nodes.length);
+	}
+	
+	public void centerGraph() {
+		double averageX = 0;
+		double averageY = 0;
+		for (NodeInstance n : nodeInstances) {
+			averageX += n.x;
+			averageY += n.y;
+		}
+		averageX /= nodeInstances.length;
+		averageY /= nodeInstances.length;
+		int canvasWidth = GraphCanvas.canvasWidth;
+		int canvasHeight = GraphCanvas.canvasHeight;
+		int deltaX = (int) ((canvasWidth / 2) - averageX);
+		int deltaY = (int) ((canvasHeight / 2) - averageY);
+		for (NodeInstance n : nodeInstances) {
+			n.x = EvoGraph.boundaryChecker(n.x + deltaX, canvasWidth);
+			n.y = EvoGraph.boundaryChecker(n.y + deltaY, canvasHeight);
+		}		
 	}
 	
 	public void calculateNodeDistances() {

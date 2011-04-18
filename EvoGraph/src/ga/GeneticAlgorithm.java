@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.Vector;
 
 import evograph.EvoGraph;
+import evograph.GraphCanvas;
 import evograph.IncrementalGraphAlgorithm;
 import graph.Graph;
 import graph.GraphInstance;
@@ -12,14 +13,12 @@ import graph.NodeInstance;
 
 public class GeneticAlgorithm implements IncrementalGraphAlgorithm {
 	Graph graph;
-	EvoGraph applet;
 	static final int populationSize = 100;
 	static final int elitism = 10;
 	public int generation = 0;
 	public Vector<GGraph> population;
 
-	public GeneticAlgorithm(EvoGraph applet, Graph graph) {
-		this.applet = applet;
+	public GeneticAlgorithm(Graph graph) {
 		this.graph = graph;
 		population = new Vector<GGraph>();
 	}
@@ -44,20 +43,28 @@ public class GeneticAlgorithm implements IncrementalGraphAlgorithm {
 				"\t\tF: " + String.format("%.2f", fittest.fitness) + 
 				"\t\t#EC: " + fittest.numberOfEdgeCrossings +
 				"\t\tEF: " + String.format("%.2f", fittest.edgeFitness) +
-				"\t\tAR: " + String.format("%.2f", fittest.angularResolution);
+				"\t\tAR: " + String.format("%.2f", fittest.angularResolution) +
+				"\t\tNT: " + String.format("%.2f", fittest.nodeTunneling);
 	}
 	
 	public void nextGeneration() {
 		generation++;
-		for (int i = elitism; i < populationSize; i++) {
+		for (int i = elitism; i < populationSize - elitism; i++) {
 			GGraph parent1 =  population.get((int) (Math.random() * elitism));
 			GGraph parent2 = population.get(i);
 			GGraph child = mutate(recombine(parent1, parent2));
+			child.centerGraph();
+			population.set(i, child);
+			child.calculateFitness();
+		}
+		for (int i = populationSize - elitism; i < populationSize; i++) {
+			GGraph child = randomIndividual();
+			child.centerGraph();
 			population.set(i, child);
 			child.calculateFitness();
 		}
 		sortPopulationByFitness();
-		System.out.println("Average fitness: " + calculateAverageFitness());
+		//System.out.println("Average fitness: " + calculateAverageFitness());
 	}
 	
 	public GGraph recombine(GGraph parent1, GGraph parent2) {
@@ -75,8 +82,8 @@ public class GeneticAlgorithm implements IncrementalGraphAlgorithm {
 	}
 	
 	public GGraph mutate(GGraph individual) {
-		int canvasWidth = applet.getCanvasWidth();
-		int canvasHeight = applet.getCanvasHeight();
+		int canvasWidth = GraphCanvas.canvasWidth;
+		int canvasHeight = GraphCanvas.canvasHeight;
 		for (int i = 0; i < graph.nodes.length; i++) {
 			if (EvoGraph.probability(.01)) {
 				individual.nodeInstances[i].x = (int) (Math.random() * canvasWidth);
@@ -87,19 +94,22 @@ public class GeneticAlgorithm implements IncrementalGraphAlgorithm {
 	}
 	
 	public void initializePopulation() {
-		int canvasWidth = applet.getCanvasWidth();
-		int canvasHeight = applet.getCanvasHeight();
 		for (int i = 0; i < populationSize; i++) {
-			GGraph individual = new GGraph(graph);
-			for (NodeInstance n : individual.nodeInstances) {
-				n.x = (int) (Math.random() * canvasWidth); //initialize with random x, y
-				n.y = (int) (Math.random() * canvasHeight);
-			}
+			GGraph individual = randomIndividual();
 			individual.calculateFitness();
 			population.add(individual);
 		}
 		sortPopulationByFitness();
 		generation++;
+	}
+	
+	public GGraph randomIndividual() {
+		GGraph individual = new GGraph(graph);
+		for (NodeInstance n : individual.nodeInstances) {
+			n.x = (int) (Math.random() * GraphCanvas.canvasWidth); //initialize with random x, y
+			n.y = (int) (Math.random() * GraphCanvas.canvasHeight);
+		}
+		return individual;
 	}
 	
 	public double calculateAverageFitness() {

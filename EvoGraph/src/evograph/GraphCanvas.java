@@ -1,5 +1,6 @@
 package evograph;
 
+import graph.Graph;
 import graph.GraphInstance;
 import graph.Node;
 import graph.NodeInstance;
@@ -11,6 +12,8 @@ import java.awt.Graphics;
 public class GraphCanvas extends Canvas {
 	private static final long serialVersionUID = 1L;
 	public static double optimalEdgeLength;
+	public static int canvasWidth;
+	public static int canvasHeight;
 	public GraphInstance graph;
 
 	public GraphCanvas() {
@@ -28,7 +31,6 @@ public class GraphCanvas extends Canvas {
 			return;
 		drawEdges(g);
 		drawNodes(g);
-		calculateOptimalEdgeLength(graph.graph.nodes.length);
 	}
 	
 	public void drawNodes(Graphics g) {
@@ -52,7 +54,12 @@ public class GraphCanvas extends Canvas {
 		}
 	}
 	
-	public void calculateOptimalEdgeLength(int numberOfNodes) {
-		optimalEdgeLength = Math.sqrt((getWidth() * getHeight())/numberOfNodes);
+	public void calculateOptimalEdgeLength() {
+		optimalEdgeLength = Math.sqrt((getWidth() * getHeight())/Graph.nNodes);
+	}
+	
+	public void setCanvasWidthAndHeight() {
+		canvasWidth = this.getWidth();
+		canvasHeight = this.getHeight();
 	}
 }
