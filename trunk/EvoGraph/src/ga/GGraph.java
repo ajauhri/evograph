@@ -12,6 +12,7 @@ public class GGraph extends GraphInstance {
 	public double fitness;
 	public double edgeFitness;
 	public double angularResolution;
+	public double nodeTunneling;
 	
 	public GGraph(Graph graph) {
 		super(graph);
@@ -21,7 +22,8 @@ public class GGraph extends GraphInstance {
 		calculateNumberOfEdgeCrossings();
 		calculateAngularResolution();
 		calculateEdgeFitness();
-		fitness = (double) (numberOfEdgeCrossings + 1) * (edgeFitness + angularResolution + 1);
+		calculateNodeTunneling();
+		fitness = (double) (numberOfEdgeCrossings + 1) * (edgeFitness + angularResolution + nodeTunneling + 1);
 	}
 
 	public void calculateAngularResolution() {
@@ -43,6 +45,17 @@ public class GGraph extends GraphInstance {
 		}
 	}
 	
+	public void calculateNodeTunneling() {
+		nodeTunneling = 0;
+		for (int i = 0; i < nodeInstances.length - 1; i++) {
+			for (int j = i + 1; j < nodeInstances[i].nodeDistances.length; j++) {
+				if (!nodeInstances[i].node.connectedNodes.containsKey(j) && nodeInstances[i].nodeDistances[j] < GraphCanvas.optimalEdgeLength)
+					nodeTunneling += Math.pow(GraphCanvas.optimalEdgeLength - nodeInstances[i].nodeDistances[j], 2);
+			}
+		}
+		nodeTunneling /= (graph.nodes.length * GraphCanvas.optimalEdgeLength);
+	}
+	
 	public void calculateEdgeFitness() {
 		calculateNodeDistances();
 		edgeFitness = 0;
@@ -52,7 +65,7 @@ public class GGraph extends GraphInstance {
 					edgeFitness += edgePenalty(nodeInstances[i].nodeDistances[n.id]);
 			}
 		}
-		edgeFitness /= (graph.nodes.length * 100);
+		edgeFitness /= (graph.nodes.length * GraphCanvas.optimalEdgeLength);
 	}
 	
 	public double edgePenalty(double edgeLength) {

@@ -2,8 +2,10 @@ package graph;
 
 public class Graph { //Undirected graph
 	public Node[] nodes;
+	public static int nNodes;
 
 	public Graph(int nNodes) {
+		Graph.nNodes = nNodes;
 		nodes = new Node[nNodes];
 		for (int i = 0; i < nNodes; i++)
 			nodes[i] = new Node(i);

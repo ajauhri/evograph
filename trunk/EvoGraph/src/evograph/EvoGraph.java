@@ -1,5 +1,6 @@
 	package evograph;
 
+import ga.GGraph;
 import ga.GeneticAlgorithm;
 import graph.FileToGraph;
 
@@ -20,7 +21,7 @@ public class EvoGraph extends JApplet implements ActionListener {
 
 	public void init() {
 		createGUI();
-		algorithm = new GeneticAlgorithm(this, new FileToGraph("octo.rgf").createGraph());
+		algorithm = new GeneticAlgorithm(new FileToGraph("tree.rgf").createGraph());
 	}
 
 	public void createGUI() {
@@ -35,7 +36,13 @@ public class EvoGraph extends JApplet implements ActionListener {
 	}
 	
 	public void next() {
-		algorithm.next();
+		canvas.setCanvasWidthAndHeight();
+		canvas.calculateOptimalEdgeLength();
+		//double fitness;
+		//do {
+			algorithm.next();
+		//	fitness = ((GGraph) algorithm.displayGraph()).fitness;
+		//} while(fitness > 52 || fitness == Double.NaN);
 		canvas.drawGraph(algorithm.displayGraph());
 		statusBar.setText(algorithm.displayText());
 	}
@@ -46,15 +53,16 @@ public class EvoGraph extends JApplet implements ActionListener {
 			next();
 	}
 	
-	public int getCanvasWidth() {
-		return canvas.getWidth();
-	}
-	
-	public int getCanvasHeight() {
-		return canvas.getHeight();
-	}
-	
 	/** Static Helper functions **/
+	
+	public static int boundaryChecker(int coordinate, int maximum) {
+		if(coordinate > maximum)
+			return maximum;
+		else if(coordinate < 0)
+			return 0;
+		else
+			return coordinate;
+	}
 	
 	public static boolean probability(double chance) {
 		return Math.random() < chance;
