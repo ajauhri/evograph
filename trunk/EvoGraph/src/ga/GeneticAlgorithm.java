@@ -39,7 +39,12 @@ public class GeneticAlgorithm implements IncrementalGraphAlgorithm {
 
 	@Override
 	public String displayText() {
-		return "Generation " + generation + "\tTop fitness = " + ((GGraph) displayGraph()).fitness;
+		GGraph fittest = (GGraph) displayGraph();
+		return "Generation " + generation +
+				"\t\tF: " + String.format("%.2f", fittest.fitness) + 
+				"\t\t#EC: " + fittest.numberOfEdgeCrossings +
+				"\t\tEF: " + String.format("%.2f", fittest.edgeFitness) +
+				"\t\tAR: " + String.format("%.2f", fittest.angularResolution);
 	}
 	
 	public void nextGeneration() {

@@ -16,7 +16,7 @@ public class GraphInstance {
 	
 	public void calculateNodeDistances() {
 		for (int i = 0; i < nodeInstances.length; i++)
-			nodeInstances[i].resetNodeDistances();
+			nodeInstances[i].nodeDistances = new double[nodeInstances.length];
 		for (int i = 0; i < nodeInstances.length - 1; i++) {
 			for (int j = i + 1; j < nodeInstances.length; j++) {
 				double distance = Graph.distanceFormula(nodeInstances[i].x, nodeInstances[i].y, nodeInstances[j].x, nodeInstances[j].y);
@@ -24,6 +24,38 @@ public class GraphInstance {
 				nodeInstances[j].nodeDistances[i] = distance;
 			}
 		}
+	}
+
+	public void calculateEdgeAngles() {
+		for (int i = 0; i < nodeInstances.length - 1; i++) {
+			for (Node n : nodeInstances[i].node.connectedNodes.values()) {
+				if(n.id < i)
+					continue;
+				double angle = calculateAngle(nodeInstances[n.id].x, nodeInstances[n.id].y, nodeInstances[i].x, nodeInstances[i].y);
+				nodeInstances[i].edgeAngles.put(n.id, angle);
+				nodeInstances[n.id].edgeAngles.put(i, flipAngle(angle));
+			}
+		}
+	}
+	
+	public double flipAngle(double angle) {
+		return angle > Math.PI ? angle - Math.PI : angle + Math.PI;
+	}
+	
+	public double calculateAngle(int x1, int y1, int x2, int y2) {
+		double angle;
+		try {
+			angle = Math.atan(((double) (y2 - y1))/((double) (x2 - x1)));
+			if(x2 < x1)
+				angle += Math.PI;
+			angle += (Math.PI / 2);
+		} catch (ArithmeticException exc) {
+			if (y2 > y1)
+				angle = (Math.PI / 2);
+			else
+				angle = 3 * (Math.PI / 2);
+		}
+        return angle;
 	}
 	
 	public void calculateNumberOfEdgeCrossings() {
