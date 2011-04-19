@@ -12,6 +12,8 @@ import javax.swing.JApplet;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
+import sa.SimulatedAnnealing;
+
 public class EvoGraph extends JApplet implements ActionListener {
 	private static final long serialVersionUID = 1L;
 	GraphCanvas canvas;
@@ -21,7 +23,8 @@ public class EvoGraph extends JApplet implements ActionListener {
 
 	public void init() {
 		createGUI();
-		algorithm = new GeneticAlgorithm(new FileToGraph("tree.rgf").createGraph());
+		//algorithm = new GeneticAlgorithm(new FileToGraph("octo.rgf").createGraph());
+		algorithm = new SimulatedAnnealing(new FileToGraph("tree.rgf").createGraph());
 	}
 
 	public void createGUI() {
@@ -40,7 +43,10 @@ public class EvoGraph extends JApplet implements ActionListener {
 		canvas.calculateOptimalEdgeLength();
 		//double fitness;
 		//do {
+		do {
 			algorithm.next();
+		} while( ((GGraph) algorithm.displayGraph()).fitness > 80.0);
+			
 		//	fitness = ((GGraph) algorithm.displayGraph()).fitness;
 		//} while(fitness > 52 || fitness == Double.NaN);
 		canvas.drawGraph(algorithm.displayGraph());
