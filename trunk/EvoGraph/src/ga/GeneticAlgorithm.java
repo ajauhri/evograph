@@ -46,6 +46,12 @@ public class GeneticAlgorithm implements IncrementalGraphAlgorithm {
 				"\t\tAR: " + String.format("%.2f", fittest.angularResolution) +
 				"\t\tNT: " + String.format("%.2f", fittest.nodeTunneling);
 	}
+
+	@Override
+	public void updateGraph() {
+		//((GGraph) graph).calculateFitness();
+		((GGraph) displayGraph()).calculateFitness();
+	}
 	
 	public void nextGeneration() {
 		generation++;

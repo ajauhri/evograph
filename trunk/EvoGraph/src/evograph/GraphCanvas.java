@@ -7,7 +7,9 @@ import graph.NodeInstance;
 
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Event;
 import java.awt.Graphics;
+import java.awt.Point;
 
 public class GraphCanvas extends Canvas {
 	private static final long serialVersionUID = 1L;
@@ -15,9 +17,12 @@ public class GraphCanvas extends Canvas {
 	public static int canvasWidth;
 	public static int canvasHeight;
 	public GraphInstance graph;
+	public NodeInstance draggedNode;
+	public EvoGraph applet;
 
-	public GraphCanvas() {
+	public GraphCanvas(EvoGraph applet) {
 		super();
+		this.applet = applet;
 		this.setBackground(Color.WHITE);
 	}
 	
@@ -62,4 +67,35 @@ public class GraphCanvas extends Canvas {
 		canvasWidth = this.getWidth();
 		canvasHeight = this.getHeight();
 	}
+	
+	/** Mouse functions **/
+	  
+	  public boolean mouseDown(Event evt, int x, int y) {
+		if (graph != null) {
+			for(NodeInstance node : graph.nodeInstances) {
+				if(x > node.x - 10 && x < node.x + 10 && y > node.y - 10 && y < node.y + 10) {
+					draggedNode = node;
+					break;
+				}		
+			}
+		}
+	    return true;
+	  }
+
+	  public boolean mouseDrag(Event evt, int x, int y) {
+		if (draggedNode != null) {
+			draggedNode.x = x;
+			draggedNode.y = y;
+		    repaint();
+		}
+	    return true;
+	  }
+
+	  public boolean mouseUp (Event evt, int x, int y) {
+		draggedNode = null;
+		applet.updateGraph();
+		//TODO: calculate fitness and add to population
+	    repaint();
+	    return true;
+	  }
 }

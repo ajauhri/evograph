@@ -3,6 +3,7 @@
 import ga.GGraph;
 import ga.GeneticAlgorithm;
 import graph.FileToGraph;
+import graph.GraphInstance;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -28,7 +29,7 @@ public class EvoGraph extends JApplet implements ActionListener {
 	}
 
 	public void createGUI() {
-		canvas = new GraphCanvas();
+		canvas = new GraphCanvas(this);
 		nextButton = new JButton("Next");
 		nextButton.addActionListener(this);
 		statusBar = new JLabel(" ");
@@ -43,11 +44,8 @@ public class EvoGraph extends JApplet implements ActionListener {
 		canvas.calculateOptimalEdgeLength();
 		//double fitness;
 		//do {
-		int count = 0;
-		while(count < 50000){
+		for(int i = 0; i < 1000; i++)
 			algorithm.next();
-			count += 1;
-		}
 		//	fitness = ((GGraph) algorithm.displayGraph()).fitness;
 		//} while(fitness > 52 || fitness == Double.NaN);
 		canvas.drawGraph(algorithm.displayGraph());
@@ -58,6 +56,11 @@ public class EvoGraph extends JApplet implements ActionListener {
 	public void actionPerformed(ActionEvent evt) {
 		if (evt.getSource() == nextButton)
 			next();
+	}
+	
+	public void updateGraph() {
+		algorithm.updateGraph();
+		statusBar.setText(algorithm.displayText());
 	}
 	
 	/** Static Helper functions **/
