@@ -7,6 +7,7 @@ import ga.GGraph;
 import graph.Graph;
 import graph.GraphInstance;
 import graph.NodeInstance;
+import java.util.Random;
 
 public class SimulatedAnnealing implements IncrementalGraphAlgorithm {
 	Graph graph;
@@ -107,12 +108,14 @@ public class SimulatedAnnealing implements IncrementalGraphAlgorithm {
 	}
 
 	public void mutate(GGraph individual) {
+		Random rand = new Random();
 		int canvasWidth = GraphCanvas.canvasWidth;
 		int canvasHeight = GraphCanvas.canvasHeight;
 		for (int i = 0; i < graph.nodes.length; i++) {
 			if (EvoGraph.probability(mutationProbability)) {
-				individual.nodeInstances[i].x = (int) (Math.random() * canvasWidth);
-				individual.nodeInstances[i].y = (int) (Math.random() * canvasHeight);
+				individual.nodeInstances[i].x = EvoGraph.boundaryChecker(individual.nodeInstances[i].x + (int) (rand.nextGaussian() * (canvasWidth / graph.nodes.length)), canvasWidth);
+				individual.nodeInstances[i].y = EvoGraph.boundaryChecker(individual.nodeInstances[i].y + (int) (rand.nextGaussian() * (canvasHeight/ graph.nodes.length)), canvasHeight);
+				
 			}
 		}
 	}

@@ -43,10 +43,11 @@ public class EvoGraph extends JApplet implements ActionListener {
 		canvas.calculateOptimalEdgeLength();
 		//double fitness;
 		//do {
-		do {
+		int count = 0;
+		while(count < 50000){
 			algorithm.next();
-		} while( ((GGraph) algorithm.displayGraph()).fitness > 80.0);
-			
+			count += 1;
+		}
 		//	fitness = ((GGraph) algorithm.displayGraph()).fitness;
 		//} while(fitness > 52 || fitness == Double.NaN);
 		canvas.drawGraph(algorithm.displayGraph());
