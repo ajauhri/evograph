@@ -1,14 +1,11 @@
-package sa;
+package hc;
 
-import evograph.EvoGraph;
 import ga.GGraph;
 import graph.Graph;
 import graph.GraphInstance;
-
 import evograph.Operators;
 
-public class SimulatedAnnealing extends Operators {
-	double temperature = 0.0;
+public class HillClimber extends Operators {
 	int iterations = 0;
 	int num_iterations_with_constant_fitness = 0;
 	double previous_parent_fitness = 0.0;
@@ -17,12 +14,9 @@ public class SimulatedAnnealing extends Operators {
 	public GGraph parentGraph;
 	public GGraph childGraph;
 	// double best_yet_fitness = 0.0;
-	public static final double initial_temperature = 50.0;
-	public static final int iterations_per_temperature_change = 10000;
-	public static final double temperature_factor = 0.50;
 	public static final double converged_iterations = 50000;
 
-	public SimulatedAnnealing(Graph graph) {
+	public HillClimber(Graph graph) {
 		 super(graph);
 	}
 
@@ -62,7 +56,6 @@ public class SimulatedAnnealing extends Operators {
 		childGraph = copyParent(parentGraph);
 		childGraph.calculateFitness();
 
-		temperature = SimulatedAnnealing.initial_temperature;
 		// best_yet_fitness = parentGraph.fitness;
 		iterations++;
 	}
@@ -77,17 +70,8 @@ public class SimulatedAnnealing extends Operators {
 		
 		if (childGraph.fitness < parentGraph.fitness)
 			swapParentAndChildGraphs(parentGraph, childGraph);
-
-		else {
-			double delta_fitness = childGraph.fitness - parentGraph.fitness;
-			if (EvoGraph.probability(Math.exp((-1.0 * delta_fitness) / temperature)))
-				swapParentAndChildGraphs(parentGraph, childGraph);
-		}
-
-		if (iterations % SimulatedAnnealing.iterations_per_temperature_change == 0)
-			temperature = temperature * SimulatedAnnealing.temperature_factor;
-
-		if (num_iterations_with_constant_fitness > SimulatedAnnealing.converged_iterations && mutationProbability <= 1.0){
+		
+		if (num_iterations_with_constant_fitness > HillClimber.converged_iterations && mutationProbability <= 1.0){
 			mutationProbability = 1.5 * mutationProbability;
 		}
 
@@ -97,4 +81,5 @@ public class SimulatedAnnealing extends Operators {
 			num_iterations_with_constant_fitness = 0;
 
 	}
+
 }
