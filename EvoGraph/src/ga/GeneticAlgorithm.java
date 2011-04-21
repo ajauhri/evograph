@@ -7,22 +7,23 @@ import java.util.Vector;
 import evograph.EvoGraph;
 import evograph.GraphCanvas;
 import evograph.IncrementalGraphAlgorithm;
+import evograph.Operators;
 import graph.Graph;
 import graph.GraphInstance;
 import graph.NodeInstance;
 
-public class GeneticAlgorithm implements IncrementalGraphAlgorithm {
-	Graph graph;
+public class GeneticAlgorithm extends Operators implements IncrementalGraphAlgorithm {
+	//Graph graph;
 	static final int populationSize = 100;
 	static final int elitism = 10;
 	public int generation = 0;
 	public Vector<GGraph> population;
 
 	public GeneticAlgorithm(Graph graph) {
-		this.graph = graph;
+		super(graph);
 		population = new Vector<GGraph>();
 	}
-	
+
 	@Override
 	public void next() {
 		if(generation == 0)
@@ -58,7 +59,9 @@ public class GeneticAlgorithm implements IncrementalGraphAlgorithm {
 		for (int i = elitism; i < populationSize - elitism; i++) {
 			GGraph parent1 =  population.get((int) (Math.random() * elitism));
 			GGraph parent2 = population.get(i);
-			GGraph child = mutate(recombine(parent1, parent2));
+			GGraph child = recombine(parent1, parent2);
+			simpleMutate(child, 0.01);
+			gaussianMutate(child, 0.01);
 			child.centerGraph();
 			population.set(i, child);
 			child.calculateFitness();
@@ -85,18 +88,6 @@ public class GeneticAlgorithm implements IncrementalGraphAlgorithm {
 			}
 		}
 		return child;
-	}
-	
-	public GGraph mutate(GGraph individual) {
-		int canvasWidth = GraphCanvas.canvasWidth;
-		int canvasHeight = GraphCanvas.canvasHeight;
-		for (int i = 0; i < graph.nodes.length; i++) {
-			if (EvoGraph.probability(.01)) {
-				individual.nodeInstances[i].x = (int) (Math.random() * canvasWidth);
-				individual.nodeInstances[i].y = (int) (Math.random() * canvasHeight);
-			}
-		}
-		return individual;
 	}
 	
 	public void initializePopulation() {
