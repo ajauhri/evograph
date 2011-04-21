@@ -25,9 +25,12 @@ public class EvoGraph extends JApplet implements ActionListener {
 
 	public void init() {
 		createGUI();
-		//algorithm = new GeneticAlgorithm(new FileToGraph("convoluted-graph.rgf").createGraph());
+		//algorithm = new GeneticAlgorithm(new FileToGraph("complex-octo.rgf").createGraph());
+		algorithm = new SimulatedAnnealing(new FileToGraph("tree.rgf").createGraph());
+
+		//algorithm = new GeneticAlgorithm(new FileToGraph("icosagon.rgf").createGraph());
 		//algorithm = new SimulatedAnnealing(new FileToGraph("convoluted-graph.rgf").createGraph());
-		algorithm = new HillClimber(new FileToGraph("convoluted-graph.rgf").createGraph());
+		//algorithm = new HillClimber(new FileToGraph("convoluted-graph.rgf").createGraph());
 	}
 
 	public void createGUI() {

@@ -7,36 +7,12 @@ import graph.Graph;
 import graph.GraphInstance;
 import graph.NodeInstance;
 
-public class Operators implements IncrementalGraphAlgorithm {
+public class Operators {
 
 	public Graph graph;
 	
 	public Operators(Graph graph) {
 		this.graph = graph;
-	}
-
-	@Override
-	public void next() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public GraphInstance displayGraph() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String displayText() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void updateGraph() {
-		// TODO Auto-generated method stub
-
 	}
 
 	public void gaussianMutate(GGraph individual, double mutationProbability) {
@@ -75,10 +51,7 @@ public class Operators implements IncrementalGraphAlgorithm {
 	public GGraph randomIndividual() {
 		GGraph individual = new GGraph(graph);
 		for (NodeInstance n : individual.nodeInstances) {
-			n.x = (int) (Math.random() * GraphCanvas.canvasWidth); // initialize
-																	// with
-																	// random x,
-																	// y
+			n.x = (int) (Math.random() * GraphCanvas.canvasWidth); // initialize 
 			n.y = (int) (Math.random() * GraphCanvas.canvasHeight);
 		}
 		return individual;

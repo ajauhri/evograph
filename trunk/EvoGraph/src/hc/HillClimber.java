@@ -3,9 +3,10 @@ package hc;
 import ga.GGraph;
 import graph.Graph;
 import graph.GraphInstance;
+import evograph.IncrementalGraphAlgorithm;
 import evograph.Operators;
 
-public class HillClimber extends Operators {
+public class HillClimber extends Operators implements IncrementalGraphAlgorithm {
 	int iterations = 0;
 	int num_iterations_with_constant_fitness = 0;
 	double previous_parent_fitness = 0.0;

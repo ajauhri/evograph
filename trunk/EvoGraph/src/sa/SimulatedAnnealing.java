@@ -1,13 +1,14 @@
 package sa;
 
 import evograph.EvoGraph;
+import evograph.IncrementalGraphAlgorithm;
 import ga.GGraph;
 import graph.Graph;
 import graph.GraphInstance;
 
 import evograph.Operators;
 
-public class SimulatedAnnealing extends Operators {
+public class SimulatedAnnealing extends Operators implements IncrementalGraphAlgorithm {
 	double temperature = 0.0;
 	int iterations = 0;
 	int num_iterations_with_constant_fitness = 0;
