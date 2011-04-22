@@ -40,12 +40,7 @@ public class GeneticAlgorithm extends Operators implements IncrementalGraphAlgor
 	@Override
 	public String displayText() {
 		GGraph fittest = (GGraph) displayGraph();
-		return "Generation " + generation +
-				"\t\tF: " + String.format("%.2f", fittest.fitness) + 
-				"\t\t#EC: " + fittest.numberOfEdgeCrossings +
-				"\t\tEF: " + String.format("%.2f", fittest.edgeFitness) +
-				"\t\tAR: " + String.format("%.2f", fittest.angularResolution) +
-				"\t\tNT: " + String.format("%.2f", fittest.nodeTunneling);
+		return "Generation " + generation + fitnessString(fittest);
 	}
 
 	@Override
@@ -61,7 +56,7 @@ public class GeneticAlgorithm extends Operators implements IncrementalGraphAlgor
 			GGraph parent2 = population.get(i);
 			GGraph child = recombine(parent1, parent2);
 			simpleMutate(child, 0.01);
-			gaussianMutate(child, 0.01);
+			gaussianMutate(child, 0.05);
 			child.centerGraph();
 			population.set(i, child);
 			child.calculateFitness();
@@ -79,7 +74,8 @@ public class GeneticAlgorithm extends Operators implements IncrementalGraphAlgor
 	public GGraph recombine(GGraph parent1, GGraph parent2) {
 		GGraph child = new GGraph(graph);
 		for (int i = 0; i < graph.nodes.length; i++) {
-			if (EvoGraph.probability(parent1.fitness / (parent1.fitness + parent2.fitness))) {
+			double probability = EvoGraph.probability(.5) ? 0.5 : parent1.fitness / (parent1.fitness + parent2.fitness);
+			if (EvoGraph.probability(probability)) {
 				child.nodeInstances[i].x = parent1.nodeInstances[i].x;
 				child.nodeInstances[i].y = parent1.nodeInstances[i].y;
 			} else {

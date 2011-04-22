@@ -1,5 +1,6 @@
 	package evograph;
 
+import ga.GeneticAlgorithm;
 import graph.FileToGraph;
 import hc.HillClimber;
 
@@ -20,9 +21,9 @@ public class EvoGraph extends JApplet implements ActionListener {
 
 	public void init() {
 		createGUI();
-		//algorithm = new GeneticAlgorithm(new FileToGraph("complex-octo.rgf").createGraph());
+		algorithm = new GeneticAlgorithm(new FileToGraph("k9.rgf").createGraph());
 		//algorithm = new SimulatedAnnealing(new FileToGraph("complex-octo.rgf").createGraph());
-		algorithm = new HillClimber(new FileToGraph("complex-octo.rgf").createGraph());
+		//algorithm = new HillClimber(new FileToGraph("complex-octo.rgf").createGraph());
 	}
 
 	public void createGUI() {

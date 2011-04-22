@@ -15,8 +15,12 @@ public class Graph { //Undirected graph
 		nodes[nodeFromId].connectedNodes.put(nodeToId, nodes[nodeToId]);
 		nodes[nodeToId].connectedNodes.put(nodeFromId, nodes[nodeFromId]);
 	}
-	
+
 	public static double distanceFormula(int x, int y, int toX, int toY) {
+		return Math.sqrt(Math.pow((x - toX), 2) + Math.pow((y - toY), 2));
+	}
+	
+	public static double distanceFormula(double x, double y, double toX, double toY) {
 		return Math.sqrt(Math.pow((x - toX), 2) + Math.pow((y - toY), 2));
 	}
 }

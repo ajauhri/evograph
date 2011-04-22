@@ -12,9 +12,11 @@ public class GraphInstance {
 	
 	public GraphInstance(Graph graph) {
 		this.graph = graph;
-		nodeInstances = new NodeInstance[graph.nodes.length];
-		for(int i = 0; i < graph.nodes.length; i++)
-			nodeInstances[i] = new NodeInstance(graph.nodes[i], graph.nodes.length);
+		if(graph != null) {
+			nodeInstances = new NodeInstance[graph.nodes.length];
+			for(int i = 0; i < graph.nodes.length; i++)
+				nodeInstances[i] = new NodeInstance(graph.nodes[i], graph.nodes.length);
+		}
 	}
 	
 	public void centerGraph() {
@@ -110,5 +112,58 @@ public class GraphInstance {
 		if (b == c || d == a || b == d)
 			return false;
 		return Line2D.linesIntersect(a.x, a.y, b.x, b.y, c.x, c.y, d.x, d.y);
+	}
+	
+	/**
+	 * Calculates the distance from point (x, y) to the edge from (x1, y1) to (x2, y2)
+	 */
+	public double calculatePointToEdgeDistance(double x, double y, double x1, double y1, double x2, double y2) {
+		double a, b, c, d;
+		if(x1 != x2) { //first find the distance from the line
+			a = (y2 - y1)/(x2 - x1);
+			b = -1;
+			c = y1 - b * x1;
+			d = Math.abs(a * x + b * y + c)/Math.sqrt(a * a + b * b);
+		} else { //infinite slope
+			d = Math.abs(x1 - x);
+			if (y > y1 && y > y2) { //see if the projected point (x1, y) is on the line segment
+				if (y1 > y2)
+					return Graph.distanceFormula(x, y, x1, y1);
+				else
+					return Graph.distanceFormula(x, y, x2, y2);
+			} else if (y < y1 && y < y2) {
+				if (y1 < y2)
+					return Graph.distanceFormula(x, y, x1, y1);
+				else
+					return Graph.distanceFormula(x, y, x2, y2);
+			} else {
+				return d;
+			}
+		}
+		double pX, pY;
+		if (y1 != y2) {
+			//Find equation of perpendicular line y = (pA)x + pC
+			double pA = (-1 / a);
+			double pC = y - pA * x;
+			//Now find the projected point (pX, pY)
+			pX = (pC - c) / (a - pA);
+			pY = a * pX + c;
+		} else {
+			pX = x;
+			pY = y1;
+		}
+		if (pX > x1 && pX > x2) { //see if the projected point is on the line segment
+			if (x1 > x2)
+				return Graph.distanceFormula(x, y, x1, y1);
+			else
+				return Graph.distanceFormula(x, y, x2, y2);
+		} else if (pX < x1 && pX < x2) {
+			if (x1 < x2)
+				return Graph.distanceFormula(x, y, x1, y1);
+			else
+				return Graph.distanceFormula(x, y, x2, y2);
+		} else {
+			return d;
+		}
 	}
 }
