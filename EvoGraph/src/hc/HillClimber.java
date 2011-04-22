@@ -70,7 +70,7 @@ public class HillClimber extends Operators implements IncrementalGraphAlgorithm 
 		childGraph.calculateFitness();
 		
 		if (childGraph.fitness < parentGraph.fitness)
-			swapParentAndChildGraphs(parentGraph, childGraph);
+			swapParentAndChildGraphs();
 		
 		if (num_iterations_with_constant_fitness > HillClimber.converged_iterations && mutationProbability <= 1.0){
 			mutationProbability = 1.5 * mutationProbability;
@@ -81,6 +81,12 @@ public class HillClimber extends Operators implements IncrementalGraphAlgorithm 
 		else
 			num_iterations_with_constant_fitness = 0;
 
+	}
+	
+	public void swapParentAndChildGraphs() {
+		GGraph temp = parentGraph;
+		parentGraph = childGraph;
+		childGraph = temp;
 	}
 
 }

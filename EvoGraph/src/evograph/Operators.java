@@ -4,7 +4,6 @@ import java.util.Random;
 
 import ga.GGraph;
 import graph.Graph;
-import graph.GraphInstance;
 import graph.NodeInstance;
 
 public class Operators {
@@ -23,7 +22,6 @@ public class Operators {
 			if (EvoGraph.probability(mutationProbability)) {
 				individual.nodeInstances[i].x = EvoGraph.boundaryChecker(individual.nodeInstances[i].x + (int) (rand.nextGaussian() * (canvasWidth / graph.nodes.length)), canvasWidth);
 				individual.nodeInstances[i].y = EvoGraph.boundaryChecker(individual.nodeInstances[i].y + (int) (rand.nextGaussian() * (canvasHeight / graph.nodes.length)), canvasHeight);
-
 			}
 		}
 	}
@@ -55,14 +53,5 @@ public class Operators {
 			n.y = (int) (Math.random() * GraphCanvas.canvasHeight);
 		}
 		return individual;
-	}
-	
-
-	public void swapParentAndChildGraphs(GGraph parentGraph, GGraph childGraph) {
-		GGraph temp = parentGraph;
-		parentGraph = childGraph;
-		childGraph = temp;
-	}
-
-
+	}	
 }
