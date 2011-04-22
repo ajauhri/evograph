@@ -60,8 +60,8 @@ public class SimulatedAnnealing extends Operators implements IncrementalGraphAlg
 		parentGraph = randomIndividual();
 		parentGraph.centerGraph();
 		parentGraph.calculateFitness();
-		childGraph = copyParent(parentGraph);
-		childGraph.calculateFitness();
+		//childGraph = copyParent(parentGraph);
+		//childGraph.calculateFitness();
 
 		temperature = SimulatedAnnealing.initial_temperature;
 		// best_yet_fitness = parentGraph.fitness;
@@ -73,16 +73,19 @@ public class SimulatedAnnealing extends Operators implements IncrementalGraphAlg
 		previous_parent_fitness = parentGraph.fitness;
 		childGraph = copyParent(parentGraph);
 		gaussianMutate(childGraph, mutationProbability);
+	
 		childGraph.centerGraph();
 		childGraph.calculateFitness();
+	
 		
-		if (childGraph.fitness < parentGraph.fitness)
-			swapParentAndChildGraphs(parentGraph, childGraph);
+		if (childGraph.fitness < parentGraph.fitness) {
+			swapParentAndChildGraphs();
+		}
 
 		else {
 			double delta_fitness = childGraph.fitness - parentGraph.fitness;
 			if (EvoGraph.probability(Math.exp((-1.0 * delta_fitness) / temperature)))
-				swapParentAndChildGraphs(parentGraph, childGraph);
+				swapParentAndChildGraphs();
 		}
 
 		if (iterations % SimulatedAnnealing.iterations_per_temperature_change == 0)
@@ -97,5 +100,11 @@ public class SimulatedAnnealing extends Operators implements IncrementalGraphAlg
 		else
 			num_iterations_with_constant_fitness = 0;
 
+	}
+	
+	public void swapParentAndChildGraphs() {
+		GGraph temp = parentGraph;
+		parentGraph = childGraph;
+		childGraph = temp;
 	}
 }

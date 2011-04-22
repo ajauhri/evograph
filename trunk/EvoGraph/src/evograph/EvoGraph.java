@@ -1,9 +1,6 @@
 	package evograph;
 
-import ga.GGraph;
-import ga.GeneticAlgorithm;
 import graph.FileToGraph;
-import graph.GraphInstance;
 import hc.HillClimber;
 
 import java.awt.BorderLayout;
@@ -13,8 +10,6 @@ import java.awt.event.ActionListener;
 import javax.swing.JApplet;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-
-import sa.SimulatedAnnealing;
 
 public class EvoGraph extends JApplet implements ActionListener {
 	private static final long serialVersionUID = 1L;
@@ -26,11 +21,8 @@ public class EvoGraph extends JApplet implements ActionListener {
 	public void init() {
 		createGUI();
 		//algorithm = new GeneticAlgorithm(new FileToGraph("complex-octo.rgf").createGraph());
-		algorithm = new SimulatedAnnealing(new FileToGraph("tree.rgf").createGraph());
-
-		//algorithm = new GeneticAlgorithm(new FileToGraph("icosagon.rgf").createGraph());
-		//algorithm = new SimulatedAnnealing(new FileToGraph("convoluted-graph.rgf").createGraph());
-		//algorithm = new HillClimber(new FileToGraph("convoluted-graph.rgf").createGraph());
+		//algorithm = new SimulatedAnnealing(new FileToGraph("complex-octo.rgf").createGraph());
+		algorithm = new HillClimber(new FileToGraph("complex-octo.rgf").createGraph());
 	}
 
 	public void createGUI() {
@@ -49,7 +41,7 @@ public class EvoGraph extends JApplet implements ActionListener {
 		canvas.calculateOptimalEdgeLength();
 		//double fitness;
 		//do {
-		for(int i = 0; i < 1000; i++)
+		for(int i = 0; i < 10; i++)
 			algorithm.next();
 		//	fitness = ((GGraph) algorithm.displayGraph()).fitness;
 		//} while(fitness > 52 || fitness == Double.NaN);

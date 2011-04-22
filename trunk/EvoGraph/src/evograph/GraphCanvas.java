@@ -9,7 +9,6 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Event;
 import java.awt.Graphics;
-import java.awt.Point;
 
 public class GraphCanvas extends Canvas {
 	private static final long serialVersionUID = 1L;
