@@ -37,12 +37,7 @@ public class HillClimber extends Operators implements IncrementalGraphAlgorithm 
 	@Override
 	public String displayText() {
 		GGraph fittest = (GGraph) displayGraph();
-		return "Iteration " + iterations + "\t\tF: "
-				+ String.format("%.2f", fittest.fitness) + "\t\t#EC: "
-				+ fittest.numberOfEdgeCrossings + "\t\tEF: "
-				+ String.format("%.2f", fittest.edgeFitness) + "\t\tAR: "
-				+ String.format("%.2f", fittest.angularResolution) + "\t\tNT: "
-				+ String.format("%.2f", fittest.nodeTunneling);
+		return "Iteration " + iterations + fitnessString(fittest);
 	}
 
 	@Override
@@ -54,7 +49,7 @@ public class HillClimber extends Operators implements IncrementalGraphAlgorithm 
 		parentGraph = randomIndividual();
 		parentGraph.centerGraph();
 		parentGraph.calculateFitness();
-		childGraph = copyParent(parentGraph);
+		childGraph = copyGGraph(parentGraph);
 		childGraph.calculateFitness();
 
 		// best_yet_fitness = parentGraph.fitness;
@@ -64,7 +59,7 @@ public class HillClimber extends Operators implements IncrementalGraphAlgorithm 
 	public void nextIndividual() {
 		iterations++;
 		previous_parent_fitness = parentGraph.fitness;
-		childGraph = copyParent(parentGraph);
+		childGraph = copyGGraph(parentGraph);
 		gaussianMutate(childGraph, mutationProbability);
 		childGraph.centerGraph();
 		childGraph.calculateFitness();

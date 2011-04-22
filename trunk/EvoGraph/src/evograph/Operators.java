@@ -37,13 +37,13 @@ public class Operators {
 		}
 	}
 
-	public GGraph copyParent(GGraph parentGraph) {
-		GGraph childGraph = new GGraph(graph);
-		for (int i = 0; i < childGraph.nodeInstances.length; i++) {
-			childGraph.nodeInstances[i].x = parentGraph.nodeInstances[i].x;
-			childGraph.nodeInstances[i].y = parentGraph.nodeInstances[i].y;
+	public GGraph copyGGraph(GGraph gGraph) {
+		GGraph newGGraph = new GGraph(graph);
+		for (int i = 0; i < newGGraph.nodeInstances.length; i++) {
+			newGGraph.nodeInstances[i].x = gGraph.nodeInstances[i].x;
+			newGGraph.nodeInstances[i].y = gGraph.nodeInstances[i].y;
 		}
-		return childGraph;
+		return newGGraph;
 	}
 
 	public GGraph randomIndividual() {
@@ -53,5 +53,13 @@ public class Operators {
 			n.y = (int) (Math.random() * GraphCanvas.canvasHeight);
 		}
 		return individual;
-	}	
+	}
+	
+	public String fitnessString(GGraph gGraph) {
+		return "\t\tF: " + String.format("%.2f", gGraph.fitness) + 
+		"\t\t#EC: " + gGraph.numberOfEdgeCrossings +
+		"\t\tEF: " + String.format("%.2f", gGraph.edgeFitness) +
+		"\t\tAR: " + String.format("%.2f", gGraph.angularResolution) +
+		"\t\tNT: " + String.format("%.2f", gGraph.nodeSeparation);
+	}
 }
