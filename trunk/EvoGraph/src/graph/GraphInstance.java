@@ -117,53 +117,23 @@ public class GraphInstance {
 	/**
 	 * Calculates the distance from point (x, y) to the edge from (x1, y1) to (x2, y2)
 	 */
-	public double calculatePointToEdgeDistance(double x, double y, double x1, double y1, double x2, double y2) {
-		double a, b, c, d;
-		if(x1 != x2) { //first find the distance from the line
-			a = (y2 - y1)/(x2 - x1);
-			b = -1;
-			c = y1 - b * x1;
-			d = Math.abs(a * x + b * y + c)/Math.sqrt(a * a + b * b);
-		} else { //infinite slope
-			d = Math.abs(x1 - x);
-			if (y > y1 && y > y2) { //see if the projected point (x1, y) is on the line segment
-				if (y1 > y2)
-					return Graph.distanceFormula(x, y, x1, y1);
-				else
-					return Graph.distanceFormula(x, y, x2, y2);
-			} else if (y < y1 && y < y2) {
-				if (y1 < y2)
-					return Graph.distanceFormula(x, y, x1, y1);
-				else
-					return Graph.distanceFormula(x, y, x2, y2);
-			} else {
-				return d;
-			}
-		}
-		double pX, pY;
-		if (y1 != y2) {
-			//Find equation of perpendicular line y = (pA)x + pC
-			double pA = (-1 / a);
-			double pC = y - pA * x;
-			//Now find the projected point (pX, pY)
-			pX = (pC - c) / (a - pA);
-			pY = a * pX + c;
-		} else {
-			pX = x;
-			pY = y1;
-		}
-		if (pX > x1 && pX > x2) { //see if the projected point is on the line segment
-			if (x1 > x2)
-				return Graph.distanceFormula(x, y, x1, y1);
-			else
-				return Graph.distanceFormula(x, y, x2, y2);
-		} else if (pX < x1 && pX < x2) {
-			if (x1 < x2)
-				return Graph.distanceFormula(x, y, x1, y1);
-			else
-				return Graph.distanceFormula(x, y, x2, y2);
-		} else {
-			return d;
-		}
-	}
+    public double distanceToSegment(double x, double y, double x1, double y1, double x2, double y2) {
+    	double xDelta = x2 - x1;
+    	double yDelta = y2 - y1;
+    	if ((xDelta == 0) && (yDelta == 0))
+        	return Graph.distanceFormula(x, y, x1, y1);
+    	double u = ((x - x1) * xDelta + (y - y1) * yDelta) / (xDelta * xDelta + yDelta * yDelta);
+    	double closestPointX, closestPointY;
+    	if (u < 0) {
+    	    closestPointX = x1;
+    	    closestPointY = y1;
+    	} else if (u > 1) {
+    	    closestPointX = x2;
+    	    closestPointY = y2;
+    	} else {
+    	    closestPointX = x1 + u * xDelta;
+    	    closestPointY = y1 + u * yDelta;
+    	}
+    	return Graph.distanceFormula(x, y, closestPointX, closestPointY);
+    }
 }
