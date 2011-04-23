@@ -13,6 +13,7 @@ public class GGraph extends GraphInstance {
 	public double edgeFitness;
 	public double angularResolution;
 	public double nodeSeparation;
+	public double edgeTunneling;
 	
 	public GGraph(Graph graph) {
 		super(graph);
@@ -23,8 +24,8 @@ public class GGraph extends GraphInstance {
 		calculateAngularResolution();
 		calculateEdgeFitness();
 		calculateNodeSeparation();
-		//calculateEdgeTunneling();
-		fitness = (double) (numberOfEdgeCrossings + 1) * (edgeFitness + angularResolution + nodeSeparation + 1);
+		calculateEdgeTunneling();
+		fitness = (double) (numberOfEdgeCrossings + 1) * (edgeFitness + angularResolution + nodeSeparation + edgeTunneling + 1);
 	}
 
 	public void calculateAngularResolution() {
@@ -57,11 +58,31 @@ public class GGraph extends GraphInstance {
 		nodeSeparation /= (graph.nodes.length * GraphCanvas.optimalEdgeLength);
 	}
 	
+	public void calculateEdgeTunneling() {
+		//System.out.println();
+		//System.out.println("=================");
+		edgeTunneling = 0;
+		for (int i = 0; i < nodeInstances.length; i++) {
+			for (int j = 0; j < nodeInstances.length; j++) {
+				if (i == j)
+					continue;
+				for(Node n : nodeInstances[j].node.connectedNodes.values()) {
+					if (n.id == i || n.id < j)
+						continue;
+					double distance = distanceToSegment(nodeInstances[i].x, nodeInstances[i].y, nodeInstances[j].x, nodeInstances[j].y, nodeInstances[n.id].x, nodeInstances[n.id].y);
+					//System.out.println("Node " + i + " is distance " + distance + " from edge (" + j + ", " + n.id + ")");
+					edgeTunneling += edgeTunnelingPenalty(distance);
+				}
+				
+			}
+		}
+	}
+	
 	public void calculateEdgeFitness() {
 		calculateNodeDistances();
 		edgeFitness = 0;
 		for (int i = 0; i < nodeInstances.length; i++) {
-			for(Node n : nodeInstances[i].node.connectedNodes.values()) {
+			for (Node n : nodeInstances[i].node.connectedNodes.values()) {
 				if (n.id > i)
 					edgeFitness += edgePenalty(nodeInstances[i].nodeDistances[n.id]);
 			}
@@ -71,5 +92,13 @@ public class GGraph extends GraphInstance {
 	
 	public double edgePenalty(double edgeLength) {
 		return Math.pow(Math.abs(GraphCanvas.optimalEdgeLength - edgeLength), 2);
+	}
+	
+	public double edgeTunnelingPenalty(double distance) {
+		double minNT = 20;
+		if (distance > minNT)
+			return 0;
+		else
+			return Math.pow(minNT - distance, 2);
 	}
 }

@@ -60,6 +60,7 @@ public class Operators {
 		"\t\t#EC: " + gGraph.numberOfEdgeCrossings +
 		"\t\tEF: " + String.format("%.2f", gGraph.edgeFitness) +
 		"\t\tAR: " + String.format("%.2f", gGraph.angularResolution) +
-		"\t\tNT: " + String.format("%.2f", gGraph.nodeSeparation);
+		"\t\tNS: " + String.format("%.2f", gGraph.nodeSeparation) +
+		"\t\tET: " + String.format("%.2f", gGraph.edgeTunneling);
 	}
 }
