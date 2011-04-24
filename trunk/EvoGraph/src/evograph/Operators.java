@@ -61,6 +61,8 @@ public class Operators {
 		"\t\tEF: " + String.format("%.2f", gGraph.edgeFitness) +
 		"\t\tAR: " + String.format("%.2f", gGraph.angularResolution) +
 		"\t\tNS: " + String.format("%.2f", gGraph.nodeSeparation) +
-		"\t\tET: " + String.format("%.2f", gGraph.edgeTunneling);
+		"\t\tET: " + String.format("%.2f", gGraph.edgeTunneling) + 
+		"\t\tOR: " + String.format("%.2f", gGraph.orthogonality);
 	}
+
 }

@@ -2,26 +2,36 @@
 
 import ga.GeneticAlgorithm;
 import graph.FileToGraph;
+import graph.Graph;
+import graph.NodeInstance;
 import hc.HillClimber;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.Line2D;
 
 import javax.swing.JApplet;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
+@SuppressWarnings("unused")
 public class EvoGraph extends JApplet implements ActionListener {
 	private static final long serialVersionUID = 1L;
 	GraphCanvas canvas;
 	JButton nextButton;
 	JLabel statusBar;
 	IncrementalGraphAlgorithm algorithm;
+	public static double angularResolutionMultiplier = 1;
+	public static double edgeFitnessMultiplier = 1;
+	public static double edgeTunnelingMultiplier = 1;
+	public static double edgeCrossingsMultiplier = 1;
+	public static double nodeSeparationMultiplier = 1;
+	public static double orthogonalityMultiplier = 0;
 
 	public void init() {
 		createGUI();
-		algorithm = new GeneticAlgorithm(new FileToGraph("k9.rgf").createGraph());
+		algorithm = new GeneticAlgorithm(new FileToGraph("nice-graph.rgf").createGraph());
 		//algorithm = new SimulatedAnnealing(new FileToGraph("complex-octo.rgf").createGraph());
 		//algorithm = new HillClimber(new FileToGraph("complex-octo.rgf").createGraph());
 	}
@@ -83,4 +93,59 @@ public class EvoGraph extends JApplet implements ActionListener {
 	public static double toDegrees(double radians) {
 		return (radians / (2 * Math.PI)) * 360;
 	}
+	
+
+	public static double flipAngle(double angle) {
+		return angle > Math.PI ? angle - Math.PI : angle + Math.PI;
+	}
+	
+	public static double calculateAngle(int x1, int y1, int x2, int y2) {
+		double angle;
+		try {
+			angle = Math.atan(((double) (y2 - y1))/((double) (x2 - x1)));
+			if(x2 < x1)
+				angle += Math.PI;
+			angle += (Math.PI / 2);
+		} catch (ArithmeticException exc) {
+			if (y2 > y1)
+				angle = (Math.PI / 2);
+			else
+				angle = 3 * (Math.PI / 2);
+		}
+        return angle;
+	}
+	
+	/**
+	 * Check if the edge between a-b intersects with the edge between c-d
+	 */
+	public static boolean checkEdgeCrossing(NodeInstance a, NodeInstance b, NodeInstance c, NodeInstance d) {
+		if (b == c || d == a || b == d)
+			return false;
+		return Line2D.linesIntersect(a.x, a.y, b.x, b.y, c.x, c.y, d.x, d.y);
+	}
+	
+
+	
+	/**
+	 * Calculates the distance from point (x, y) to the edge from (x1, y1) to (x2, y2)
+	 */
+    public static double distanceToSegment(double x, double y, double x1, double y1, double x2, double y2) {
+    	double xDelta = x2 - x1;
+    	double yDelta = y2 - y1;
+    	if ((xDelta == 0) && (yDelta == 0))
+        	return Graph.distanceFormula(x, y, x1, y1);
+    	double u = ((x - x1) * xDelta + (y - y1) * yDelta) / (xDelta * xDelta + yDelta * yDelta);
+    	double closestPointX, closestPointY;
+    	if (u < 0) {
+    	    closestPointX = x1;
+    	    closestPointY = y1;
+    	} else if (u > 1) {
+    	    closestPointX = x2;
+    	    closestPointY = y2;
+    	} else {
+    	    closestPointX = x1 + u * xDelta;
+    	    closestPointY = y1 + u * yDelta;
+    	}
+    	return Graph.distanceFormula(x, y, closestPointX, closestPointY);
+    }
 }
