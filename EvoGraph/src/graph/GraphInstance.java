@@ -7,6 +7,7 @@ public class GraphInstance {
 	public Graph graph;
 	public NodeInstance[] nodeInstances;
 	public int numberOfEdgeCrossings;
+	public int age = 0;
 	
 	public GraphInstance(Graph graph) {
 		this.graph = graph;
