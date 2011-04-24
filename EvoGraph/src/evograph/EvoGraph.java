@@ -1,11 +1,8 @@
 	package evograph;
 
-import ga.ALPS;
-import ga.GeneticAlgorithm;
 import graph.FileToGraph;
 import graph.Graph;
 import graph.NodeInstance;
-import hc.HillClimber;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -16,7 +13,12 @@ import javax.swing.JApplet;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
-import sa.SimulatedAnnealing;
+import algorithms.IncrementalGraphAlgorithm;
+import algorithms.generationBased.ALPS;
+import algorithms.generationBased.GeneticAlgorithm;
+import algorithms.iterationBased.HillClimber;
+import algorithms.iterationBased.SimulatedAnnealing;
+
 
 @SuppressWarnings("unused")
 public class EvoGraph extends JApplet implements ActionListener {
@@ -34,11 +36,11 @@ public class EvoGraph extends JApplet implements ActionListener {
 
 	public void init() {
 		createGUI();
-		//algorithm = new GeneticAlgorithm(new FileToGraph("nice-graph.rgf").createGraph());
-		algorithm = new SimulatedAnnealing(new FileToGraph("david-fig11.rgf").createGraph());
+		algorithm = new GeneticAlgorithm(new FileToGraph("complex-octo.rgf").createGraph());
+		//algorithm = new SimulatedAnnealing(new FileToGraph("david-fig11.rgf").createGraph());
 
 		//algorithm = new HillClimber(new FileToGraph("complex-octo.rgf").createGraph());
-		//algorithm = new ALPS(new FileToGraph("david-fig2.rgf").createGraph());
+		//algorithm = new ALPS(new FileToGraph("grid9.rgf").createGraph());
 	}
 
 	public void createGUI() {
@@ -57,7 +59,7 @@ public class EvoGraph extends JApplet implements ActionListener {
 		canvas.calculateOptimalEdgeLength();
 		//double fitness;
 		//do {
-		for(int i = 0; i < 1000; i++)
+		for(int i = 0; i < 10; i++)
 			algorithm.next();
 		//	fitness = ((GGraph) algorithm.displayGraph()).fitness;
 		//} while(fitness > 52 || fitness == Double.NaN);
@@ -128,8 +130,6 @@ public class EvoGraph extends JApplet implements ActionListener {
 			return false;
 		return Line2D.linesIntersect(a.x, a.y, b.x, b.y, c.x, c.y, d.x, d.y);
 	}
-	
-
 	
 	/**
 	 * Calculates the distance from point (x, y) to the edge from (x1, y1) to (x2, y2)

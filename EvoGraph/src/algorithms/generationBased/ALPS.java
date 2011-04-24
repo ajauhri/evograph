@@ -1,32 +1,26 @@
-package ga;
+package algorithms.generationBased;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import evograph.EvoGraph;
-import evograph.IncrementalGraphAlgorithm;
-import evograph.Operators;
-import graph.Graph;
-import graph.GraphInstance;
+import algorithms.IncrementalGraphAlgorithm;
 
-public class ALPS extends Operators implements IncrementalGraphAlgorithm {
-	
-	public ArrayList<Vector<GGraph>> population;
-	static final int population_per_layer = 100;
+import evograph.EvoGraph;
+import graph.GraphInstance;
+import graph.Graph;
+
+public class ALPS extends GenerationBasedAlgorithm implements IncrementalGraphAlgorithm {
+	public ArrayList<Vector<GraphInstance>> population;
 	static final int age_gap_factor = 20;
-	static final double elitism = 0.1;
-	public int generation = 0;
 	static List<Integer> fibonacciList;
 	public static int layerCount = 1;
 	
 	public ALPS(Graph graph) {
 		super(graph);
-		population = new ArrayList<Vector<GGraph>>();
-		population.add(new Vector<GGraph>());
+		population = new ArrayList<Vector<GraphInstance>>();
+		population.add(new Vector<GraphInstance>());
 		fibonacciList = new ArrayList<Integer>();
 		fibonacciList.add(0, 1);
 		fibonacciList.add(1, 1);
@@ -58,20 +52,20 @@ public class ALPS extends Operators implements IncrementalGraphAlgorithm {
 
 	@Override
 	public String displayText() {
-		GGraph fittest = (GGraph) displayGraph();
+		GraphInstance fittest = (GraphInstance) displayGraph();
 		return "Generation " + generation + fitnessString(fittest);
 	}
 
 	@Override
 	public void updateGraph() {
-		((GGraph) displayGraph()).calculateFitness();
+		((GraphInstance) displayGraph()).calculateFitness();
 	}
 	
 	public void initializeLayerZeroPopulation() {
-		Vector<GGraph> layerPopulation = new Vector<GGraph>();
+		Vector<GraphInstance> layerPopulation = new Vector<GraphInstance>();
 		
-		for (int i = 0; i < population_per_layer; i++) {
-			GGraph individual = randomIndividual();
+		for (int i = 0; i < populationSize; i++) {
+			GraphInstance individual = randomIndividual();
 			individual.age = 0;
 			individual.calculateFitness();
 			layerPopulation.add(individual);
@@ -89,8 +83,8 @@ public class ALPS extends Operators implements IncrementalGraphAlgorithm {
 			int elites = (int) (elitism * population.get(layerNumber).size());
 			/*** perform recombinations and mutations for the non-elite population ***/
 			for (int iterator = elites ; iterator < population.get(layerNumber).size() - elitism; iterator++) {
-				GGraph parent1 = population.get(layerNumber).get(iterator);
-				GGraph parent2, child;
+				GraphInstance parent1 = population.get(layerNumber).get(iterator);
+				GraphInstance parent2, child;
 				
 				/*** recombination step ***/
 				/*** choose an elite parent either from nth layer, or (n-1)th layer with either probability of 0.5 ***/
@@ -104,6 +98,9 @@ public class ALPS extends Operators implements IncrementalGraphAlgorithm {
 					}
 				}
 				child = recombine(parent1, parent2);
+
+				/*** offspring inherits the age of of oldest parent ***/
+				child.age = (parent1.age < parent2.age) ? parent2.age : parent1.age;
 				
 				/*** mutation steps ***/
 				simpleMutate(child, 0.01);
@@ -123,12 +120,12 @@ public class ALPS extends Operators implements IncrementalGraphAlgorithm {
 	public void upgradeIndividuals() {
 		
 		for (int layerNumber = layerCount - 1; layerNumber > 0; layerNumber--) {
-			Vector<GGraph> layerPopulation = population.get(layerNumber);
+			Vector<GraphInstance> layerPopulation = population.get(layerNumber);
 			
 			/***
 			 * get age_limit based on the fibonacci series. For example, a
-			 * fib series of {1, 2, 3 , 5, 8...} will have age-limits of {1k,
-			 * 2k, 3k, 5k, 8k...} where k is the age_gap factor being a constant
+			 * fib series of {1, 2, 3 , 5, 8...} will have age-limits of {1g,
+			 * 2g, 3g, 5g, 8g...} where g is the age_gap factor being a constant
 			 ***/
 			int fibonacciFactor = fibonacciList.get(layerNumber);
 			
@@ -156,8 +153,8 @@ public class ALPS extends Operators implements IncrementalGraphAlgorithm {
 	}
 
 
-	public void putIndividualInSucceedingLayer(GGraph individual, int layerNumber) {
-		Vector<GGraph> layerPopulation = population.get(layerNumber);
+	public void putIndividualInSucceedingLayer(GraphInstance individual, int layerNumber) {
+		Vector<GraphInstance> layerPopulation = population.get(layerNumber);
 		int layerSize = layerPopulation.size() - 1;
 		if (layerSize < 0)
 			layerPopulation.add(individual);
@@ -166,24 +163,6 @@ public class ALPS extends Operators implements IncrementalGraphAlgorithm {
 			sortPopulationByFitness(layerNumber);
 		}
 	}
-	
-	public GGraph recombine(GGraph parent1, GGraph parent2) {
-		GGraph child = new GGraph(graph);
-		/*** offspring inherits the age of of oldest parent ***/
-		child.age = (parent1.age < parent2.age) ? parent2.age : parent1.age;
-		for (int i = 0; i < graph.nodes.length; i++) {
-			double probability = EvoGraph.probability(.5) ? 0.5 : parent1.fitness / (parent1.fitness + parent2.fitness);
-			if (EvoGraph.probability(probability)) {
-				child.nodeInstances[i].x = parent1.nodeInstances[i].x;
-				child.nodeInstances[i].y = parent1.nodeInstances[i].y;
-			} else {
-				child.nodeInstances[i].x = parent2.nodeInstances[i].x;
-				child.nodeInstances[i].y = parent2.nodeInstances[i].y;	
-			}
-		}
-		return child;
-	}
-
 		
 	public static void updateFibonacciList() {
 		fibonacciList.add(fibonacciList.get(layerCount - 1) + fibonacciList.get(layerCount - 2));		
@@ -191,7 +170,7 @@ public class ALPS extends Operators implements IncrementalGraphAlgorithm {
 
 	public void incrementPopulationAge() {
 		for (int layerNumber = 1; layerNumber <= layerCount; layerNumber++) {
-		Vector<GGraph> layerPopulation = population.get(layerNumber);
+		Vector<GraphInstance> layerPopulation = population.get(layerNumber);
 		for (int iterator = 0; iterator < layerPopulation.size(); iterator++)
 			layerPopulation.get(iterator).age += 1;
 		}
@@ -200,16 +179,5 @@ public class ALPS extends Operators implements IncrementalGraphAlgorithm {
 	
 	public void sortPopulationByFitness(int layerNumber) {
 		Collections.sort(population.get(layerNumber), new FitnessComparator());
-	}
-
-	class FitnessComparator implements Comparator<GGraph> {
-		public int compare(GGraph g1, GGraph g2) {
-			if (g2.fitness == g1.fitness)
-				return 0;
-			else if (g2.fitness > g1.fitness)
-				return -1;
-			else
-				return 1;
-		}
 	}
 }

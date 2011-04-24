@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import evograph.EvoGraph;
-import ga.GGraph;
 
 
 public class TestMathFunctions {
@@ -29,15 +28,15 @@ public class TestMathFunctions {
 	
 	@Test
 	public void testOrthogonalityPenalty() {
-		assertEquals(GGraph.orthogonalityPenalty(0), 0, 0);
-		assertEquals(GGraph.orthogonalityPenalty(Math.PI / 4), 1, 0);
-		assertEquals(GGraph.orthogonalityPenalty(Math.PI / 2), 0, 0);
-		assertEquals(GGraph.orthogonalityPenalty(3 * Math.PI / 4), 1, 0);
-		assertEquals(GGraph.orthogonalityPenalty(Math.PI), 0, 0);
-		assertEquals(GGraph.orthogonalityPenalty(5 * Math.PI / 4), 1, 0);
-		assertEquals(GGraph.orthogonalityPenalty(3 * Math.PI / 2), 0, 0);
-		assertEquals(GGraph.orthogonalityPenalty(7 * Math.PI / 4), 1, 0);
-		assertEquals(GGraph.orthogonalityPenalty(2 * Math.PI), 0, 0);
-		assertTrue(GGraph.orthogonalityPenalty(0.1) > 1 -GGraph.orthogonalityPenalty((Math.PI / 4) - 0.1));
+		assertEquals(GraphInstance.orthogonalityPenalty(0), 0, 0);
+		assertEquals(GraphInstance.orthogonalityPenalty(Math.PI / 4), 1, 0);
+		assertEquals(GraphInstance.orthogonalityPenalty(Math.PI / 2), 0, 0);
+		assertEquals(GraphInstance.orthogonalityPenalty(3 * Math.PI / 4), 1, 0);
+		assertEquals(GraphInstance.orthogonalityPenalty(Math.PI), 0, 0);
+		assertEquals(GraphInstance.orthogonalityPenalty(5 * Math.PI / 4), 1, 0);
+		assertEquals(GraphInstance.orthogonalityPenalty(3 * Math.PI / 2), 0, 0);
+		assertEquals(GraphInstance.orthogonalityPenalty(7 * Math.PI / 4), 1, 0);
+		assertEquals(GraphInstance.orthogonalityPenalty(2 * Math.PI), 0, 0);
+		assertTrue(GraphInstance.orthogonalityPenalty(0.1) > 1 -GraphInstance.orthogonalityPenalty((Math.PI / 4) - 0.1));
 	}
 }
