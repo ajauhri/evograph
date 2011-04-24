@@ -1,4 +1,4 @@
-package evograph;
+package algorithms;
 
 import graph.GraphInstance;
 

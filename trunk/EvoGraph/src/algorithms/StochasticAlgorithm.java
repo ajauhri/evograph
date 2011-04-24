@@ -1,20 +1,24 @@
-package evograph;
+package algorithms;
 
+import java.util.Comparator;
 import java.util.Random;
 
-import ga.GGraph;
+import evograph.EvoGraph;
+import evograph.GraphCanvas;
+
+import graph.GraphInstance;
 import graph.Graph;
 import graph.NodeInstance;
 
-public class Operators {
+public class StochasticAlgorithm {
 
 	public Graph graph;
 	
-	public Operators(Graph graph) {
+	public StochasticAlgorithm(Graph graph) {
 		this.graph = graph;
 	}
 
-	public void gaussianMutate(GGraph individual, double mutationProbability) {
+	public void gaussianMutate(GraphInstance individual, double mutationProbability) {
 		Random rand = new Random();
 		int canvasWidth = GraphCanvas.canvasWidth;
 		int canvasHeight = GraphCanvas.canvasHeight;
@@ -26,7 +30,7 @@ public class Operators {
 		}
 	}
 	
-	public void simpleMutate(GGraph individual, double mutationProbability) {
+	public void simpleMutate(GraphInstance individual, double mutationProbability) {
 		int canvasWidth = GraphCanvas.canvasWidth;
 		int canvasHeight = GraphCanvas.canvasHeight;
 		for (int i = 0; i < graph.nodes.length; i++) {
@@ -37,17 +41,17 @@ public class Operators {
 		}
 	}
 
-	public GGraph copyGGraph(GGraph gGraph) {
-		GGraph newGGraph = new GGraph(graph);
-		for (int i = 0; i < newGGraph.nodeInstances.length; i++) {
-			newGGraph.nodeInstances[i].x = gGraph.nodeInstances[i].x;
-			newGGraph.nodeInstances[i].y = gGraph.nodeInstances[i].y;
+	public GraphInstance copyGraphInstance(GraphInstance graphInstance) {
+		GraphInstance newGraphInstance = new GraphInstance(graph);
+		for (int i = 0; i < newGraphInstance.nodeInstances.length; i++) {
+			newGraphInstance.nodeInstances[i].x = graphInstance.nodeInstances[i].x;
+			newGraphInstance.nodeInstances[i].y = graphInstance.nodeInstances[i].y;
 		}
-		return newGGraph;
+		return newGraphInstance;
 	}
 
-	public GGraph randomIndividual() {
-		GGraph individual = new GGraph(graph);
+	public GraphInstance randomIndividual() {
+		GraphInstance individual = new GraphInstance(graph);
 		for (NodeInstance n : individual.nodeInstances) {
 			n.x = (int) (Math.random() * GraphCanvas.canvasWidth); // initialize 
 			n.y = (int) (Math.random() * GraphCanvas.canvasHeight);
@@ -55,14 +59,24 @@ public class Operators {
 		return individual;
 	}
 	
-	public String fitnessString(GGraph gGraph) {
-		return "\t\tF: " + String.format("%.2f", gGraph.fitness) + 
+	public String fitnessString(GraphInstance gGraph) {
+		return "\t\tF: " + String.format("%.3f", gGraph.fitness) + 
 		"\t\t#EC: " + gGraph.numberOfEdgeCrossings +
 		"\t\tEF: " + String.format("%.2f", gGraph.edgeFitness) +
 		"\t\tAR: " + String.format("%.2f", gGraph.angularResolution) +
 		"\t\tNS: " + String.format("%.2f", gGraph.nodeSeparation) +
-		"\t\tET: " + String.format("%.2f", gGraph.edgeTunneling) + 
-		"\t\tOR: " + String.format("%.2f", gGraph.orthogonality);
+		"\t\tET: " + String.format("%.2f", gGraph.edgeTunneling); 
+		//"\t\tOR: " + String.format("%.2f", gGraph.orthogonality);
 	}
 
+	public class FitnessComparator implements Comparator<GraphInstance> {
+		public int compare(GraphInstance g1, GraphInstance g2) {
+			if (g2.fitness == g1.fitness)
+				return 0;
+			else if (g2.fitness > g1.fitness)
+				return -1;
+			else
+				return 1;
+		}
+	}
 }
