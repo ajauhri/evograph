@@ -1,8 +1,9 @@
 package graph;
 
 public class Graph { //Undirected graph
-	public Node[] nodes;
+	public final Node[] nodes;
 	public static int nNodes;
+	public static int nEdges = 0;
 
 	public Graph(int nNodes) {
 		Graph.nNodes = nNodes;
@@ -12,6 +13,7 @@ public class Graph { //Undirected graph
 	}
 	
 	public void createEdge(int nodeFromId, int nodeToId) {
+		nEdges++;
 		nodes[nodeFromId].connectedNodes.put(nodeToId, nodes[nodeToId]);
 		nodes[nodeToId].connectedNodes.put(nodeFromId, nodes[nodeFromId]);
 	}
