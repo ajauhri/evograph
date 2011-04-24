@@ -1,5 +1,6 @@
 	package evograph;
 
+import ga.ALPS;
 import ga.GeneticAlgorithm;
 import graph.FileToGraph;
 import graph.Graph;
@@ -14,6 +15,8 @@ import java.awt.geom.Line2D;
 import javax.swing.JApplet;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+
+import sa.SimulatedAnnealing;
 
 @SuppressWarnings("unused")
 public class EvoGraph extends JApplet implements ActionListener {
@@ -31,9 +34,11 @@ public class EvoGraph extends JApplet implements ActionListener {
 
 	public void init() {
 		createGUI();
-		algorithm = new GeneticAlgorithm(new FileToGraph("nice-graph.rgf").createGraph());
-		//algorithm = new SimulatedAnnealing(new FileToGraph("complex-octo.rgf").createGraph());
+		//algorithm = new GeneticAlgorithm(new FileToGraph("nice-graph.rgf").createGraph());
+		algorithm = new SimulatedAnnealing(new FileToGraph("david-fig11.rgf").createGraph());
+
 		//algorithm = new HillClimber(new FileToGraph("complex-octo.rgf").createGraph());
+		//algorithm = new ALPS(new FileToGraph("david-fig2.rgf").createGraph());
 	}
 
 	public void createGUI() {
@@ -52,7 +57,7 @@ public class EvoGraph extends JApplet implements ActionListener {
 		canvas.calculateOptimalEdgeLength();
 		//double fitness;
 		//do {
-		for(int i = 0; i < 10; i++)
+		for(int i = 0; i < 1000; i++)
 			algorithm.next();
 		//	fitness = ((GGraph) algorithm.displayGraph()).fitness;
 		//} while(fitness > 52 || fitness == Double.NaN);

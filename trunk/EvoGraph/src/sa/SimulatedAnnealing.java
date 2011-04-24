@@ -20,7 +20,7 @@ public class SimulatedAnnealing extends Operators implements IncrementalGraphAlg
 	// double best_yet_fitness = 0.0;
 	public static final double initial_temperature = 50.0;
 	public static final int iterations_per_temperature_change = 10000;
-	public static final double temperature_factor = 0.50;
+	public static final double temperature_factor = 0.20;
 	public static final double converged_iterations = 50000;
 
 	public SimulatedAnnealing(Graph graph) {
