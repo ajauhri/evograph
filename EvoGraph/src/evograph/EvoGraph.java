@@ -22,7 +22,6 @@ import algorithms.iterationBased.HillClimber;
 import algorithms.iterationBased.SimulatedAnnealing;
 
 
-@SuppressWarnings("unused")
 public class EvoGraph extends JApplet implements ActionListener {
 	private static final long serialVersionUID = 1L;
 	GraphCanvas canvas;
@@ -36,14 +35,19 @@ public class EvoGraph extends JApplet implements ActionListener {
 	public static double nodeSeparationMultiplier = 1;
 	public static double orthogonalityMultiplier = 0;
 	
-	public static double optimalFitness = 5.01;
+	public static String rgf = "complex-octo";
+	public static double optimalFitness = 4.5;
+	
+	public static Graph rawGraph;
 	public LinkedList<Double> readings;
 	public int nRestarts = 0;
+	public int queueLength;
+	public DataCollector dataCollector;
 
 	public void init() {
 		createGUI();
 		readings = new LinkedList<Double>();
-		algorithm = new GeneticAlgorithm(new FileToGraph("binary-tree.rgf").createGraph());
+		rawGraph = new FileToGraph(rgf + ".rgf").createGraph();
 		//algorithm = new SimulatedAnnealing(new FileToGraph("david-fig11.rgf").createGraph());
 		//algorithm = new HillClimber(new FileToGraph("complex-octo.rgf").createGraph());
 		//algorithm = new ALPS(new FileToGraph("grid9.rgf").createGraph());
@@ -65,7 +69,36 @@ public class EvoGraph extends JApplet implements ActionListener {
 		canvas.calculateOptimalEdgeLength();
 		//for (int i = 0; i < 10; i++)
 		//	algorithm.next();
-		//for(int i = 0; i < 100; i++) {
+		
+		runAllAlgorithms(1);
+		
+		canvas.drawGraph(algorithm.displayGraph());
+		statusBar.setText(algorithm.displayText());
+	}
+	
+	public void runAllAlgorithms(int nRuns) {
+		queueLength = 10;
+		algorithm = new GeneticAlgorithm(rawGraph);
+		runUntilOptimalFound(nRuns);	
+
+		queueLength = 100;
+		algorithm = new SimulatedAnnealing(rawGraph);
+		runUntilOptimalFound(nRuns);
+
+		queueLength = 100;
+		algorithm = new HillClimber(rawGraph);
+		runUntilOptimalFound(nRuns);
+
+		queueLength = 10;
+		algorithm = new ALPS(rawGraph);
+		runUntilOptimalFound(nRuns);
+	}
+	
+	public void runUntilOptimalFound(int nRuns) {
+		System.out.println("Beginning runs for " + algorithm.getClass().getSimpleName());
+		for (int i = 0; i < nRuns; i++) {
+			System.out.println("Run #" + (i + 1));
+			dataCollector = new DataCollector(algorithm.getClass().getSimpleName(), rgf, 1);
 			double fitness;
 			do {
 				algorithm.next();
@@ -74,10 +107,10 @@ public class EvoGraph extends JApplet implements ActionListener {
 				if (algorithm.getRuns() % 1000 == 0)
 					takeReading(graph);
 			} while(fitness > optimalFitness);
-		//}
-		
-		canvas.drawGraph(algorithm.displayGraph());
-		statusBar.setText(algorithm.displayText());
+			dataCollector.close();
+			nRestarts = 0;
+		}
+		System.out.println("Finished runs for " + algorithm.getClass().getSimpleName());
 	}
 
 	@Override
@@ -94,17 +127,20 @@ public class EvoGraph extends JApplet implements ActionListener {
 	public void restartAlgorithm() {
 		readings.clear();
 		nRestarts++;
+		System.out.println("Restart #" + nRestarts + " after " + algorithm.getRuns() + " runs");
 		algorithm.restart();
 	}
 	
 	public void takeReading(GraphInstance graph) {
-		if (readings.size() < 10) {
+		if (readings.size() < queueLength) {
 			readings.add(graph.fitness);
 		} else {
 			readings.removeFirst();
 			readings.add(graph.fitness);
-			if(readings.getLast() > readings.getFirst() * 0.995 && graph.fitness > optimalFitness * 1.1)
+			if(readings.getLast() > readings.getFirst() * 0.995 && graph.fitness > optimalFitness * 1.1) {
 				restartAlgorithm();
+				dataCollector.writeReading("*");
+			}
 		}
 		String reading = String.format("%.3f", graph.fitness) + 
 		" " + graph.numberOfEdgeCrossings +
@@ -112,7 +148,8 @@ public class EvoGraph extends JApplet implements ActionListener {
 		" " + String.format("%.3f", graph.angularResolution) +
 		" " + String.format("%.3f", graph.nodeSeparation) +
 		" " + String.format("%.3f", graph.edgeTunneling); 
-		System.out.println(reading);
+		//System.out.println(reading);
+		dataCollector.writeReading(reading);
 	}
 	
 	/** Static Helper functions **/
