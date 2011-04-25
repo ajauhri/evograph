@@ -12,9 +12,14 @@ public class SimulatedAnnealing extends IterationBasedAlgorithm {
 
 	public SimulatedAnnealing(Graph graph) {
 		 super(graph);
-		 temperature = SimulatedAnnealing.initial_temperature;
 	}
 
+	@Override
+	public void restart() {
+		super.restart();
+		temperature = SimulatedAnnealing.initial_temperature;
+	}
+	
 	public void nextIndividual() {
 		iterations++;
 		previous_parent_fitness = parentGraph.fitness;

@@ -18,6 +18,12 @@ public class GeneticAlgorithm extends GenerationBasedAlgorithm implements Increm
 	}
 
 	@Override
+	public void restart() {
+		generation = 0;
+		population.clear();
+	}
+
+	@Override
 	public void next() {
 		if(generation == 0)
 			initializePopulation();

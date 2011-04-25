@@ -6,16 +6,25 @@ import algorithms.IncrementalGraphAlgorithm;
 import algorithms.StochasticAlgorithm;
 
 public class IterationBasedAlgorithm extends StochasticAlgorithm implements IncrementalGraphAlgorithm {
-	int iterations = 0;
-	int num_iterations_with_constant_fitness = 0;
-	double previous_parent_fitness = 0.0;
-	double mutationProbability = 0.05;
+	int iterations;
+	int num_iterations_with_constant_fitness;
+	double previous_parent_fitness;
+	double mutationProbability;
 	public static final double converged_iterations = 50000;
 	public GraphInstance parentGraph;
 	public GraphInstance childGraph;
 	
 	public IterationBasedAlgorithm(Graph graph) {
 		super(graph);
+		restart();
+	}
+	
+	@Override
+	public void restart() {
+		iterations = 0;
+		num_iterations_with_constant_fitness = 0;
+		previous_parent_fitness = 0;
+		mutationProbability = 0.05;
 	}
 	
 	@Override
@@ -55,5 +64,11 @@ public class IterationBasedAlgorithm extends StochasticAlgorithm implements Incr
 		GraphInstance temp = parentGraph;
 		parentGraph = childGraph;
 		childGraph = temp;
+	}
+
+	
+	public int getRuns() {
+		// TODO Auto-generated method stub
+		return iterations;
 	}
 }
