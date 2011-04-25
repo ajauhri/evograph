@@ -23,6 +23,7 @@ public class ALPS extends GenerationBasedAlgorithm implements IncrementalGraphAl
 
 	@Override
 	public void restart() {
+		generation = 0;
 		layerCount = 1;
 		population = new ArrayList<Vector<GraphInstance>>();
 		population.add(new Vector<GraphInstance>());

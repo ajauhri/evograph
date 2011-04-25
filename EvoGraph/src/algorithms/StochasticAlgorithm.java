@@ -11,7 +11,6 @@ import graph.Graph;
 import graph.NodeInstance;
 
 public class StochasticAlgorithm {
-
 	public Graph graph;
 	
 	public StochasticAlgorithm(Graph graph) {
