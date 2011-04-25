@@ -38,22 +38,23 @@ public class EvoGraph extends JApplet implements ActionListener {
 	public static String rgf = "complex-octo";
 	public static double optimalFitness = 4.5;
 	
-	public static Graph rawGraph;
+	public Graph rawGraph;
 	public LinkedList<Double> readings;
 	public int nRestarts = 0;
-	public int queueLength;
+	public int queueLength = 10;
 	public DataCollector dataCollector;
 
 	public void init() {
-		createGUI();
 		readings = new LinkedList<Double>();
 		rawGraph = new FileToGraph(rgf + ".rgf").createGraph();
 		//algorithm = new SimulatedAnnealing(new FileToGraph("david-fig11.rgf").createGraph());
 		//algorithm = new HillClimber(new FileToGraph("complex-octo.rgf").createGraph());
 		//algorithm = new ALPS(new FileToGraph("grid9.rgf").createGraph());
+		createGUI();
 	}
 
 	public void createGUI() {
+		algorithm = new ALPS(rawGraph);
 		canvas = new GraphCanvas(this);
 		nextButton = new JButton("Next");
 		nextButton.addActionListener(this);
@@ -68,9 +69,9 @@ public class EvoGraph extends JApplet implements ActionListener {
 		canvas.setCanvasWidthAndHeight();
 		canvas.calculateOptimalEdgeLength();
 		//for (int i = 0; i < 10; i++)
-		//	algorithm.next();
+			//algorithm.next();
 		
-		runAllAlgorithms(1);
+		runAllAlgorithms(5);
 		
 		canvas.drawGraph(algorithm.displayGraph());
 		statusBar.setText(algorithm.displayText());
@@ -81,13 +82,13 @@ public class EvoGraph extends JApplet implements ActionListener {
 		algorithm = new GeneticAlgorithm(rawGraph);
 		runUntilOptimalFound(nRuns);	
 
-		queueLength = 100;
-		algorithm = new SimulatedAnnealing(rawGraph);
-		runUntilOptimalFound(nRuns);
-
-		queueLength = 100;
-		algorithm = new HillClimber(rawGraph);
-		runUntilOptimalFound(nRuns);
+//		queueLength = 100;
+//		algorithm = new SimulatedAnnealing(rawGraph);
+//		runUntilOptimalFound(nRuns);
+//
+//		queueLength = 100;
+//		algorithm = new HillClimber(rawGraph);
+//		runUntilOptimalFound(nRuns);
 
 		queueLength = 10;
 		algorithm = new ALPS(rawGraph);
@@ -98,7 +99,9 @@ public class EvoGraph extends JApplet implements ActionListener {
 		System.out.println("Beginning runs for " + algorithm.getClass().getSimpleName());
 		for (int i = 0; i < nRuns; i++) {
 			System.out.println("Run #" + (i + 1));
-			dataCollector = new DataCollector(algorithm.getClass().getSimpleName(), rgf, 1);
+			readings.clear();
+			algorithm.restart();
+			dataCollector = new DataCollector(algorithm.getClass().getSimpleName(), rgf, i + 1);
 			double fitness;
 			do {
 				algorithm.next();
