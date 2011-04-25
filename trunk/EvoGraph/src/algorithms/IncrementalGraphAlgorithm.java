@@ -7,4 +7,6 @@ public interface IncrementalGraphAlgorithm {
 	public GraphInstance displayGraph();
 	public String displayText();
 	public void updateGraph();
+	public int getRuns();
+	public void restart();
 }

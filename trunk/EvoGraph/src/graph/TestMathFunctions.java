@@ -11,7 +11,9 @@ public class TestMathFunctions {
 	
 	@Test
 	public void calculateAngleTest() {
-		assertEquals(EvoGraph.calculateAngle(0, 0, 0, 0), Double.NaN, 0);
+		assertEquals(EvoGraph.calculateAngle(5, 32, 5, 32), Double.NaN, 0);
+		assertEquals(EvoGraph.calculateAngle(5, 32, 11, 32), Math.PI / 2, 0);
+		assertEquals(EvoGraph.calculateAngle(5, 32, 5, 34), Math.PI, 0);
 	}
 
 	@Test

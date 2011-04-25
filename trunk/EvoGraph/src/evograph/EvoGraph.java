@@ -1,13 +1,15 @@
-	package evograph;
+package evograph;
 
 import graph.FileToGraph;
 import graph.Graph;
+import graph.GraphInstance;
 import graph.NodeInstance;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Line2D;
+import java.util.LinkedList;
 
 import javax.swing.JApplet;
 import javax.swing.JButton;
@@ -33,12 +35,16 @@ public class EvoGraph extends JApplet implements ActionListener {
 	public static double edgeCrossingsMultiplier = 1;
 	public static double nodeSeparationMultiplier = 1;
 	public static double orthogonalityMultiplier = 0;
+	
+	public static double optimalFitness = 5.01;
+	public LinkedList<Double> readings;
+	public int nRestarts = 0;
 
 	public void init() {
 		createGUI();
-		algorithm = new GeneticAlgorithm(new FileToGraph("complex-octo.rgf").createGraph());
+		readings = new LinkedList<Double>();
+		algorithm = new GeneticAlgorithm(new FileToGraph("binary-tree.rgf").createGraph());
 		//algorithm = new SimulatedAnnealing(new FileToGraph("david-fig11.rgf").createGraph());
-
 		//algorithm = new HillClimber(new FileToGraph("complex-octo.rgf").createGraph());
 		//algorithm = new ALPS(new FileToGraph("grid9.rgf").createGraph());
 	}
@@ -57,12 +63,19 @@ public class EvoGraph extends JApplet implements ActionListener {
 	public void next() {
 		canvas.setCanvasWidthAndHeight();
 		canvas.calculateOptimalEdgeLength();
-		//double fitness;
-		//do {
-		for(int i = 0; i < 10; i++)
-			algorithm.next();
-		//	fitness = ((GGraph) algorithm.displayGraph()).fitness;
-		//} while(fitness > 52 || fitness == Double.NaN);
+		//for (int i = 0; i < 10; i++)
+		//	algorithm.next();
+		//for(int i = 0; i < 100; i++) {
+			double fitness;
+			do {
+				algorithm.next();
+				GraphInstance graph = algorithm.displayGraph();
+				fitness = graph.fitness;
+				if (algorithm.getRuns() % 1000 == 0)
+					takeReading(graph);
+			} while(fitness > optimalFitness);
+		//}
+		
 		canvas.drawGraph(algorithm.displayGraph());
 		statusBar.setText(algorithm.displayText());
 	}
@@ -76,6 +89,30 @@ public class EvoGraph extends JApplet implements ActionListener {
 	public void updateGraph() {
 		algorithm.updateGraph();
 		statusBar.setText(algorithm.displayText());
+	}
+	
+	public void restartAlgorithm() {
+		readings.clear();
+		nRestarts++;
+		algorithm.restart();
+	}
+	
+	public void takeReading(GraphInstance graph) {
+		if (readings.size() < 10) {
+			readings.add(graph.fitness);
+		} else {
+			readings.removeFirst();
+			readings.add(graph.fitness);
+			if(readings.getLast() > readings.getFirst() * 0.995 && graph.fitness > optimalFitness * 1.1)
+				restartAlgorithm();
+		}
+		String reading = String.format("%.3f", graph.fitness) + 
+		" " + graph.numberOfEdgeCrossings +
+		" " + String.format("%.3f", graph.edgeFitness) +
+		" " + String.format("%.3f", graph.angularResolution) +
+		" " + String.format("%.3f", graph.nodeSeparation) +
+		" " + String.format("%.3f", graph.edgeTunneling); 
+		System.out.println(reading);
 	}
 	
 	/** Static Helper functions **/
@@ -107,18 +144,13 @@ public class EvoGraph extends JApplet implements ActionListener {
 	}
 	
 	public static double calculateAngle(int x1, int y1, int x2, int y2) {
+		if (x1 == x2 && y1 == y2)
+			return 0;
 		double angle;
-		try {
-			angle = Math.atan(((double) (y2 - y1))/((double) (x2 - x1)));
-			if(x2 < x1)
-				angle += Math.PI;
-			angle += (Math.PI / 2);
-		} catch (ArithmeticException exc) {
-			if (y2 > y1)
-				angle = (Math.PI / 2);
-			else
-				angle = 3 * (Math.PI / 2);
-		}
+		angle = Math.atan(((double) (y2 - y1))/((double) (x2 - x1)));
+		if(x2 < x1)
+			angle += Math.PI;
+		angle += (Math.PI / 2);
         return angle;
 	}
 	

@@ -2,7 +2,6 @@ package algorithms.generationBased;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Vector;
 
 import algorithms.IncrementalGraphAlgorithm;
@@ -14,11 +13,17 @@ import graph.Graph;
 public class ALPS extends GenerationBasedAlgorithm implements IncrementalGraphAlgorithm {
 	public ArrayList<Vector<GraphInstance>> population;
 	static final int age_gap_factor = 20;
-	static List<Integer> fibonacciList;
-	public static int layerCount = 1;
+	ArrayList<Integer> fibonacciList;
+	public int layerCount;
 	
 	public ALPS(Graph graph) {
 		super(graph);
+		restart();
+	}
+
+	@Override
+	public void restart() {
+		layerCount = 1;
 		population = new ArrayList<Vector<GraphInstance>>();
 		population.add(new Vector<GraphInstance>());
 		fibonacciList = new ArrayList<Integer>();
@@ -164,7 +169,7 @@ public class ALPS extends GenerationBasedAlgorithm implements IncrementalGraphAl
 		}
 	}
 		
-	public static void updateFibonacciList() {
+	public void updateFibonacciList() {
 		fibonacciList.add(fibonacciList.get(layerCount - 1) + fibonacciList.get(layerCount - 2));		
 	}
 
