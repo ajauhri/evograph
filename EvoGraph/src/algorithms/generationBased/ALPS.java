@@ -170,7 +170,7 @@ public class ALPS extends GenerationBasedAlgorithm implements IncrementalGraphAl
 		}
 	}
 		
-	public void updateFibonacciList() {
+	public void updateFibonacciList() {	
 		fibonacciList.add(fibonacciList.get(layerCount - 1) + fibonacciList.get(layerCount - 2));		
 	}
 
