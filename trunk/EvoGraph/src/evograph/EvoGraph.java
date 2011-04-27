@@ -35,26 +35,27 @@ public class EvoGraph extends JApplet implements ActionListener {
 	public static double nodeSeparationMultiplier = 1;
 	public static double orthogonalityMultiplier = 0;
 	
-	public static String rgf = "complex-octo";
-	public static double optimalFitness = 4.5;
+	public static String rgf = "grid16";
+	public static double optimalFitness = 3.0;
 	
 	public Graph rawGraph;
 	public LinkedList<Double> readings;
 	public int nRestarts = 0;
 	public int queueLength = 10;
 	public DataCollector dataCollector;
+	public long startTime;
 
 	public void init() {
 		readings = new LinkedList<Double>();
 		rawGraph = new FileToGraph(rgf + ".rgf").createGraph();
+		//algorithm = new GeneticAlgorithm(new FileToGraph("spider-web.rgf").createGraph());
 		//algorithm = new SimulatedAnnealing(new FileToGraph("david-fig11.rgf").createGraph());
 		//algorithm = new HillClimber(new FileToGraph("complex-octo.rgf").createGraph());
-		//algorithm = new ALPS(new FileToGraph("grid9.rgf").createGraph());
+		algorithm = new ALPS(new FileToGraph("complex-octo	.rgf").createGraph());
 		createGUI();
 	}
 
 	public void createGUI() {
-		algorithm = new ALPS(rawGraph);
 		canvas = new GraphCanvas(this);
 		nextButton = new JButton("Next");
 		nextButton.addActionListener(this);
@@ -68,10 +69,10 @@ public class EvoGraph extends JApplet implements ActionListener {
 	public void next() {
 		canvas.setCanvasWidthAndHeight();
 		canvas.calculateOptimalEdgeLength();
-		//for (int i = 0; i < 10; i++)
-			//algorithm.next();
+		for (int i = 0; i < 10; i++)
+			algorithm.next();
 		
-		runAllAlgorithms(5);
+		//runAllAlgorithms(25);
 		
 		canvas.drawGraph(algorithm.displayGraph());
 		statusBar.setText(algorithm.displayText());
@@ -82,13 +83,13 @@ public class EvoGraph extends JApplet implements ActionListener {
 		algorithm = new GeneticAlgorithm(rawGraph);
 		runUntilOptimalFound(nRuns);	
 
-//		queueLength = 100;
-//		algorithm = new SimulatedAnnealing(rawGraph);
-//		runUntilOptimalFound(nRuns);
-//
-//		queueLength = 100;
-//		algorithm = new HillClimber(rawGraph);
-//		runUntilOptimalFound(nRuns);
+		queueLength = 100;
+		algorithm = new SimulatedAnnealing(rawGraph);
+		runUntilOptimalFound(nRuns);
+
+		queueLength = 100;
+ 		algorithm = new HillClimber(rawGraph);
+		runUntilOptimalFound(nRuns);
 
 		queueLength = 10;
 		algorithm = new ALPS(rawGraph);
@@ -98,6 +99,7 @@ public class EvoGraph extends JApplet implements ActionListener {
 	public void runUntilOptimalFound(int nRuns) {
 		System.out.println("Beginning runs for " + algorithm.getClass().getSimpleName());
 		for (int i = 0; i < nRuns; i++) {
+			startTime = System.currentTimeMillis();
 			System.out.println("Run #" + (i + 1));
 			readings.clear();
 			algorithm.restart();
@@ -110,6 +112,8 @@ public class EvoGraph extends JApplet implements ActionListener {
 				if (algorithm.getRuns() % 1000 == 0)
 					takeReading(graph);
 			} while(fitness > optimalFitness);
+			long elapsedTime = System.currentTimeMillis() - startTime;
+			dataCollector.writeReading("Total time: "+ elapsedTime + " ms");
 			dataCollector.close();
 			nRestarts = 0;
 		}
@@ -202,7 +206,7 @@ public class EvoGraph extends JApplet implements ActionListener {
 			return false;
 		return Line2D.linesIntersect(a.x, a.y, b.x, b.y, c.x, c.y, d.x, d.y);
 	}
-	
+
 	/**
 	 * Calculates the distance from point (x, y) to the edge from (x1, y1) to (x2, y2)
 	 */
