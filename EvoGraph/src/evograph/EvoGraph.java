@@ -37,7 +37,7 @@ public class EvoGraph extends JApplet implements ActionListener {
 	public static double nodeSeparationMultiplier = 1;
 	public static double orthogonalityMultiplier = 0;
 	
-	public static String rgf = "k17";
+	public static String rgf = "k16";
 	public static double optimalFitness = 5.01;
 	
 	public Graph rawGraph;
@@ -58,7 +58,7 @@ public class EvoGraph extends JApplet implements ActionListener {
 		algorithm = new GeneticAlgorithm(rawGraph);
 		//algorithm = new SimulatedAnnealing(new FileToGraph("david-fig11.rgf").createGraph());
 		//algorithm = new HillClimber(new FileToGraph("complex-octo.rgf").createGraph());
-		//algorithm = new ALPS(new FileToGraph("grid9.rgf").createGraph());
+		//algorithm = new ALPS(rawGraph);
 		createGUI();
 	}
 
@@ -78,20 +78,25 @@ public class EvoGraph extends JApplet implements ActionListener {
 		canvas.calculateOptimalEdgeLength();
 		
 		//runAllAlgorithms(1);
-//		while(!optimalFound) {
-//			System.out.println(algorithm.getRuns());
+
 		//clock.init();
 		clock.init();
 //		for (int i = 0; i < 5; i++)
 //			algorithm.next();
+		for (int i = 0; i < 1000; i++) {
+			algorithm.restart();
+			dataCollector = new DataCollector(algorithm.getClass()
+					.getSimpleName(), rgf, i + 1);
+			do {
+				algorithm.next();
+			} while (checkConverged(algorithm.displayGraph()));
+			takeReading(algorithm.displayGraph());
+			dataCollector.close();
+			canvas.drawGraph(algorithm.displayGraph());
+			statusBar.setText(algorithm.displayText());
+		}
+	//System.out.println("total time for 10 runs = " + clock.diff() + " ms");
 
-		do {
-			algorithm.next();
-
-		} while (checkConverged(algorithm.displayGraph()));
-		
-		//System.out.println("total time for 10 runs = " + clock.diff() + " ms");
-//
 		canvas.drawGraph(algorithm.displayGraph());
 		statusBar.setText(algorithm.displayText());
 		checkOptimalFound();
@@ -176,16 +181,6 @@ public class EvoGraph extends JApplet implements ActionListener {
 	}
 	
 	public void takeReading(GraphInstance graph) {
-		if (readings.size() < queueLength) {
-			readings.add(graph.fitness);
-		} else {
-			readings.removeFirst();
-			readings.add(graph.fitness);
-			if(readings.getLast() > readings.getFirst() * 0.995 && graph.fitness > optimalFitness * 1.1) {
-				restartAlgorithm();
-				dataCollector.writeReading("*");
-			}
-		}
 		String reading = String.format("%.3f", graph.fitness) + 
 		" " + graph.numberOfEdgeCrossings +
 		" " + String.format("%.3f", graph.edgeFitness) +
