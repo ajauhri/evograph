@@ -32,12 +32,12 @@ public class EvoGraph extends JApplet implements ActionListener {
 	IncrementalGraphAlgorithm algorithm;
 	public static double angularResolutionMultiplier = 1;
 	public static double edgeFitnessMultiplier = 1;
-	public static double edgeTunnelingMultiplier = 1;
+	public static double edgeTunnelingMultiplier = 0;
 	public static double edgeCrossingsMultiplier = 1000;
 	public static double nodeSeparationMultiplier = 1;
 	public static double orthogonalityMultiplier = 0;
 	
-	public static String rgf = "k10";
+	public static String rgf = "k17";
 	public static double optimalFitness = 5.01;
 	
 	public Graph rawGraph;
