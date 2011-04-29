@@ -32,18 +32,18 @@ public class EvoGraph extends JApplet implements ActionListener {
 	IncrementalGraphAlgorithm algorithm;
 	public static double angularResolutionMultiplier = 1;
 	public static double edgeFitnessMultiplier = 1;
-	public static double edgeTunnelingMultiplier = 0.3;
+	public static double edgeTunnelingMultiplier = 1;
 	public static double edgeCrossingsMultiplier = 1000;
 	public static double nodeSeparationMultiplier = 1;
 	public static double orthogonalityMultiplier = 0;
 	
-	public static String rgf = "k12";
+	public static String rgf = "k10";
 	public static double optimalFitness = 5.01;
 	
 	public Graph rawGraph;
 	public LinkedList<Double> readings;
 	public int nRestarts = 0;
-	public int queueLength = 10;
+	public int queueLength = 20;
 	public DataCollector dataCollector;
 	public long startTime;
 	public Clock clock;
@@ -82,13 +82,19 @@ public class EvoGraph extends JApplet implements ActionListener {
 //			System.out.println(algorithm.getRuns());
 		//clock.init();
 		clock.init();
-		for (int i = 0; i < 5; i++)
+//		for (int i = 0; i < 5; i++)
+//			algorithm.next();
+
+		do {
 			algorithm.next();
-		System.out.println("total time for 10 runs = " + clock.diff() + " ms");
+
+		} while (checkConverged(algorithm.displayGraph()));
+		
+		//System.out.println("total time for 10 runs = " + clock.diff() + " ms");
 //
 		canvas.drawGraph(algorithm.displayGraph());
 		statusBar.setText(algorithm.displayText());
-//			checkOptimalFound();
+		checkOptimalFound();
 //		}
 
 		canvas.drawGraph(algorithm.displayGraph());
@@ -134,6 +140,20 @@ public class EvoGraph extends JApplet implements ActionListener {
 	
 	public void checkOptimalFound() {
 		optimalFound = algorithm.displayGraph().fitness <= optimalFitness;
+	}
+	
+	
+	public boolean checkConverged(GraphInstance graph) {
+		if (readings.size() < queueLength) {
+			readings.add(graph.fitness);
+			return true;
+		} else {
+			readings.removeFirst();
+			readings.add(graph.fitness);
+			if(readings.getLast() < readings.getFirst() * 0.995) 
+				return true;
+		}
+		return false;
 	}
 	
 
