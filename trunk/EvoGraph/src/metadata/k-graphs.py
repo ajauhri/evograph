@@ -2,9 +2,9 @@
 import sys
 
 def main(max):
-    for i in xrange(1, max+1):
+    for i in xrange(5, max+1):
         f = file("k"+str(i)+".rgf",'w')
-        f.write(("%s \n") % i)
+        f.write(("%s\n") % i)
         for row in xrange(0,i):
             for column in xrange(row, i):
                 f.write(("%d ") % column)
