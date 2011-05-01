@@ -18,6 +18,7 @@ import javax.swing.JLabel;
 import utils.Clock;
 
 import algorithms.IncrementalGraphAlgorithm;
+import algorithms.KGraphHeuristic;
 import algorithms.generationBased.ALPS;
 import algorithms.generationBased.GeneticAlgorithm;
 import algorithms.iterationBased.HillClimber;
@@ -37,7 +38,7 @@ public class EvoGraph extends JApplet implements ActionListener {
 	public static double nodeSeparationMultiplier = 1;
 	public static double orthogonalityMultiplier = 0;
 	
-	public static String rgf = "k16";
+	public static String rgf = "k20";
 	public static double optimalFitness = 5.01;
 	
 	public Graph rawGraph;
@@ -55,7 +56,8 @@ public class EvoGraph extends JApplet implements ActionListener {
 		clock = new Clock();
 		readings = new LinkedList<Double>();
 		rawGraph = new FileToGraph(rgf + ".rgf").createGraph();
-		algorithm = new GeneticAlgorithm(rawGraph);
+		algorithm = new KGraphHeuristic(rawGraph);
+		//algorithm = new GeneticAlgorithm(rawGraph);
 		//algorithm = new SimulatedAnnealing(new FileToGraph("david-fig11.rgf").createGraph());
 		//algorithm = new HillClimber(new FileToGraph("complex-octo.rgf").createGraph());
 		//algorithm = new ALPS(rawGraph);
@@ -70,31 +72,31 @@ public class EvoGraph extends JApplet implements ActionListener {
 	    getContentPane().add(canvas, BorderLayout.CENTER);
 	    getContentPane().add(nextButton, BorderLayout.SOUTH);
 	    getContentPane().add(statusBar, BorderLayout.NORTH);
-		this.resize(500, 550);
+		this.resize(900, 750);
 	}
 	
 	public void next() {
 		canvas.setCanvasWidthAndHeight();
 		canvas.calculateOptimalEdgeLength();
 		
+		clock.init();
+		for (int i = 0; i < 5; i++)
+			algorithm.next();
+		System.out.println("total time for 5 runs = " + clock.diff() + " ms");
+		
 		//runAllAlgorithms(1);
 
-		//clock.init();
-		clock.init();
 //		for (int i = 0; i < 5; i++)
 //			algorithm.next();
-		for (int i = 0; i < 1000; i++) {
-			algorithm.restart();
-			dataCollector = new DataCollector(algorithm.getClass()
-					.getSimpleName(), rgf, i + 1);
-			do {
-				algorithm.next();
-			} while (checkConverged(algorithm.displayGraph()));
-			takeReading(algorithm.displayGraph());
-			dataCollector.close();
-			canvas.drawGraph(algorithm.displayGraph());
-			statusBar.setText(algorithm.displayText());
-		}
+//		for (int i = 0; i < 1000; i++) {
+//			algorithm.restart();
+//			dataCollector = new DataCollector(algorithm.getClass().getSimpleName(), rgf, i + 1);
+//			do {
+//				algorithm.next();
+//			} while (checkConverged(algorithm.displayGraph()));
+//			takeReading(algorithm.displayGraph());
+//			dataCollector.close();
+//		}
 	//System.out.println("total time for 10 runs = " + clock.diff() + " ms");
 
 		canvas.drawGraph(algorithm.displayGraph());
@@ -228,6 +230,14 @@ public class EvoGraph extends JApplet implements ActionListener {
 			angle += Math.PI;
 		angle += (Math.PI / 2);
         return angle;
+	}
+	
+	public static int[] calculateCoordinatesFromPointAngleDistance(int x, int y, double angle, double distance) {
+		int[] coords = new int[2];
+		angle -= (Math.PI / 2);
+		coords[0] = x + (int) (distance * Math.cos(angle));
+		coords[1] = y + (int) (distance * Math.sin(angle));
+		return coords;
 	}
 	
 	/**

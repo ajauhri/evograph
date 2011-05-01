@@ -92,6 +92,11 @@ public class GraphInstance {
 			}
 		}
 	}
+	
+	public void calculateKFitness() {
+		calculateNumberOfEdgeCrossings();
+		fitness = numberOfEdgeCrossings;
+	}
 
 	public void calculateFitness() {
 		calculateNodeDistances();

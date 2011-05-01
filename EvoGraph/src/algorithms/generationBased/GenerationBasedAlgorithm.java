@@ -6,8 +6,8 @@ import graph.GraphInstance;
 import algorithms.StochasticAlgorithm;
 
 public class GenerationBasedAlgorithm extends StochasticAlgorithm {
-	static final int populationSize = 200;
-	static final double elitism = 0.1;
+	protected static final int populationSize = 200;
+	protected static final double elitism = 0.1;
 	public int generation = 0;
 	
 	public GenerationBasedAlgorithm(Graph graph) {
