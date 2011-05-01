@@ -27,6 +27,13 @@ public class GraphInstance {
 		}
 	}
 	
+	public String printCoordinates() {
+		String printString = "" + nodeInstances.length;
+		for (int i = 0; i < nodeInstances.length; i++)
+			printString += "\n" + nodeInstances[i].realX + " " + nodeInstances[i].realY;
+		return printString;
+	}
+	
 	public void centerGraph() {
 		double averageX = 0;
 		double averageY = 0;

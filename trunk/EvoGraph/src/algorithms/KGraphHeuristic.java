@@ -33,7 +33,6 @@ public class KGraphHeuristic extends GenerationBasedAlgorithm implements Increme
 		anchorPoints = new Point[3];
 		nLayers = (graph.nodes.length - 1) / 3 + 1;
 		angleMutationFactor = 0.5 * maximumDeltaAngle;
-		distanceMutationFactor = 0.5 * (distanceToCenter / nLayers);
 		fitnessComparator = new FitnessComparator();
 		population = new GraphInstance[populationSize];
 	}
@@ -65,6 +64,10 @@ public class KGraphHeuristic extends GenerationBasedAlgorithm implements Increme
 	public void restart() {
 		generation = 0;
 	}
+
+	public int getRuns() {
+		return generation;
+	}
 	
 	public void initializePopulation() {
 		setAnchorPoints();
@@ -78,35 +81,33 @@ public class KGraphHeuristic extends GenerationBasedAlgorithm implements Increme
 	}
 	
 	public void setAnchorPoints() {
-		int width, height, xOffset, yOffset;
+		double width, height, xOffset, yOffset;
 		if ((double) GraphCanvas.canvasHeight >= (double) (GraphCanvas.canvasWidth * Math.sqrt(3) / 2)) {
 			width = GraphCanvas.canvasWidth;
-			height = (int) (GraphCanvas.canvasWidth * Math.sqrt(3) / 2);
+			height = GraphCanvas.canvasWidth * Math.sqrt(3) / 2;
 			xOffset = 0;
 			yOffset = (GraphCanvas.canvasHeight - height) / 2;
 		} else {
 			height = GraphCanvas.canvasHeight;
-			width = (int) (GraphCanvas.canvasHeight * 2 / Math.sqrt(3));
+			width = GraphCanvas.canvasHeight * 2 / Math.sqrt(3);
 			yOffset = 0;
 			xOffset = (GraphCanvas.canvasWidth - width) / 2;
 		}
-		anchorPoints[0] = new Point(xOffset, height + yOffset);
-		anchorPoints[1] = new Point(xOffset + (width / 2), yOffset);
-		anchorPoints[2] = new Point(xOffset + width, height + yOffset);
-		distanceToCenter = width / Math.sqrt(3);
+		anchorPoints[0] = new Point((int) (100 * xOffset), (int) (100 * (height + yOffset)));
+		anchorPoints[1] = new Point((int) (100 * (xOffset + (width / 2))), (int) (100 * yOffset));
+		anchorPoints[2] = new Point((int) (100 * (xOffset + width)), (int) (100 * (height + yOffset)));
+		distanceToCenter = 100 * width / Math.sqrt(3);
+		distanceMutationFactor = 0.1 * (distanceToCenter / nLayers);
 	}
 	
 	public GraphInstance randomIndividual() {
 		GraphInstance individual = new GraphInstance(graph);
-		individual.nodeInstances[0].x = anchorPoints[0].x;
-		individual.nodeInstances[0].y = anchorPoints[0].y;
-		
-		individual.nodeInstances[1].x = anchorPoints[1].x;
-		individual.nodeInstances[1].y = anchorPoints[1].y;
-		
-		individual.nodeInstances[2].x = anchorPoints[2].x;
-		individual.nodeInstances[2].y = anchorPoints[2].y;
-		
+		individual.nodeInstances[0].setRealX(anchorPoints[0].x);
+		individual.nodeInstances[0].setRealY(anchorPoints[0].y);
+		individual.nodeInstances[1].setRealX(anchorPoints[1].x);
+		individual.nodeInstances[1].setRealY(anchorPoints[1].y);
+		individual.nodeInstances[2].setRealX(anchorPoints[2].x);
+		individual.nodeInstances[2].setRealY(anchorPoints[2].y);
 		for (int i = 0; i < Graph.nNodes; i++) {
 			NodeInstance n = individual.nodeInstances[i];
 			n.distanceFromAnchor = distanceToCenter * (n.id / 3) / nLayers;
@@ -119,8 +120,8 @@ public class KGraphHeuristic extends GenerationBasedAlgorithm implements Increme
 	public void calculateCoordsFromDistanceAndAngle(NodeInstance n) {
 		int anchor = n.id % 3;
 		int coords[] = EvoGraph.calculateCoordinatesFromPointAngleDistance(anchorPoints[anchor].x, anchorPoints[anchor].y, referenceAngles[anchor] + n.deltaAngle, n.distanceFromAnchor);
-		n.x = coords[0];
-		n.y = coords[1];
+		n.setRealX(coords[0]);
+		n.setRealY(coords[1]);
 	}
 	
 	public void nextGeneration() {
@@ -140,11 +141,11 @@ public class KGraphHeuristic extends GenerationBasedAlgorithm implements Increme
 	}
 
 	public void recombineK(GraphInstance parent1, GraphInstance parent2) {
-		for (int i = 0; i < graph.nodes.length; i++) {
+		for (int i = 3; i < graph.nodes.length; i++) {
 			double probability = Math.random() < .5 ? 0.5 : parent1.fitness / (parent1.fitness + parent2.fitness);
 			if (EvoGraph.probability(probability)) {
-				parent2.nodeInstances[i].x = parent1.nodeInstances[i].x;
-				parent2.nodeInstances[i].y = parent1.nodeInstances[i].y;
+				parent2.nodeInstances[i].setRealX(parent1.nodeInstances[i].realX);
+				parent2.nodeInstances[i].setRealY(parent1.nodeInstances[i].realY);
 				parent2.nodeInstances[i].distanceFromAnchor = parent1.nodeInstances[i].distanceFromAnchor;
 				parent2.nodeInstances[i].deltaAngle = parent1.nodeInstances[i].deltaAngle;
 			}
@@ -152,7 +153,7 @@ public class KGraphHeuristic extends GenerationBasedAlgorithm implements Increme
 	}
 	
 	public void mutate(GraphInstance individual, double distanceProbability, double angleProbability) {
-		for (int i = 0; i < graph.nodes.length; i++) {
+		for (int i = 3; i < graph.nodes.length; i++) {
 			boolean mutated = false;
 			if (Math.random() < distanceProbability) {
 				individual.nodeInstances[i].distanceFromAnchor += (rand.nextGaussian() * distanceMutationFactor);

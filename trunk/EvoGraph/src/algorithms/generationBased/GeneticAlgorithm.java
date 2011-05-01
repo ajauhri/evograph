@@ -84,8 +84,8 @@ public class GeneticAlgorithm extends GenerationBasedAlgorithm implements Increm
 	public GraphInstance randomIndividual() {
 		GraphInstance individual = new GraphInstance(graph);
 		for (NodeInstance n : individual.nodeInstances) {
-			n.x = (int) (Math.random() * GraphCanvas.canvasWidth); //initialize with random x, y
-			n.y = (int) (Math.random() * GraphCanvas.canvasHeight);
+			n.setRealX((int) (100 * Math.random() * GraphCanvas.canvasWidth)); //initialize with random x, y
+			n.setRealY((int) (100 * Math.random() * GraphCanvas.canvasHeight));
 		}
 		return individual;
 	}

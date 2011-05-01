@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.FileWriter;
 public class DataCollector {
 	
-	protected String rootPath = "../../output/k-graphs/";
+	protected String rootPath = "../../output/";
 	protected String inputFilePath;
 	protected int numTestCases;
 	protected BufferedReader br;

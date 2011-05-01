@@ -7,6 +7,8 @@ public class NodeInstance {
 	public int id;
 	public int x;
 	public int y;
+	public int realX;
+	public int realY;
 	public double distanceFromAnchor;
 	public double deltaAngle;
 	public double[] nodeDistances;
@@ -17,5 +19,15 @@ public class NodeInstance {
 		this.id = node.id;
 		nodeDistances = new double[totalNodes];
 		edgeAngles = new HashMap<Integer, Double>();
+	}
+	
+	public void setRealX(int newX) {
+		realX = newX;
+		x = newX / 100;
+	}
+	
+	public void setRealY(int newY) {
+		realY = newY;
+		y = newY / 100;
 	}
 }

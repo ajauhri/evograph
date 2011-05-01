@@ -41,10 +41,16 @@ public class EvoGraph extends JApplet implements ActionListener {
 	public static String rgf = "k20";
 	public static double optimalFitness = 5.01;
 	
+	public static int[] cnLowerBounds = {0,0,0,0,0,1,3,9,19,36,62,102,153,229,324,447,603,
+										798,1029,1318,1657,2055,2528,3077,3699,4430,5250,6180,
+										7233,8419,9723,11207,12827,14626,16580,18776,21123,23759,
+										26569,29661,32987,36632,40488,44744,49238,54117,59311,64933,
+										70836,77268,84012}; //50
+	
 	public Graph rawGraph;
 	public LinkedList<Double> readings;
 	public int nRestarts = 0;
-	public int queueLength = 20;
+	public int queueLength = 25;
 	public DataCollector dataCollector;
 	public long startTime;
 	public Clock clock;
@@ -79,12 +85,14 @@ public class EvoGraph extends JApplet implements ActionListener {
 		canvas.setCanvasWidthAndHeight();
 		canvas.calculateOptimalEdgeLength();
 		
-		clock.init();
-		for (int i = 0; i < 5; i++)
-			algorithm.next();
-		System.out.println("total time for 5 runs = " + clock.diff() + " ms");
+//		clock.init();
+//		for (int i = 0; i < 5; i++)
+//			algorithm.next();
+//		System.out.println("total time for 5 runs = " + clock.diff() + " ms");
 		
 		//runAllAlgorithms(1);
+		
+		runKGraphs(18, 18, 30); //starting k, ending k, maximum # runs
 
 //		for (int i = 0; i < 5; i++)
 //			algorithm.next();
@@ -101,10 +109,42 @@ public class EvoGraph extends JApplet implements ActionListener {
 
 		canvas.drawGraph(algorithm.displayGraph());
 		statusBar.setText(algorithm.displayText());
-		checkOptimalFound();
+		//checkOptimalFound();
 //		}
-
-		canvas.drawGraph(algorithm.displayGraph());
+	}
+	
+	public void runKGraphs(int first, int last, int maxRuns) {
+		int run;
+		boolean foundOptimal;
+		GraphInstance[] bestFound = new GraphInstance[last - first + 1];
+		for (int i = first; i <= last; i++) {
+			run = 0;
+			algorithm = new KGraphHeuristic(new FileToGraph("k" + i + ".rgf").createGraph());
+			KDataCollector dc = new KDataCollector("k" + i);
+			while(run < maxRuns) {
+				run++;
+				readings.clear();
+				converged = false;
+				GraphInstance graph;
+				do {
+					algorithm.next();
+					graph = algorithm.displayGraph();
+				} while (!konverged(graph, i));
+				dc.writeLine("Run " + run + " converged to " + graph.numberOfEdgeCrossings + " in " + (algorithm.getRuns() - readings.size() + 1) + " generations");
+				if(bestFound[i - first] == null || graph.numberOfEdgeCrossings < bestFound[i - first].numberOfEdgeCrossings) {
+					bestFound[i - first] = graph;
+					if(graph.numberOfEdgeCrossings <= cnLowerBounds[i]) {
+						dc.writeLine("Lower bound for K" + i + " found (" + graph.numberOfEdgeCrossings + ")");
+						break;
+					}
+				}
+				algorithm.restart();
+			}
+			dc.close();
+			dc = new KDataCollector("best-k" + i);
+			dc.writeLine(bestFound[i - first].printCoordinates(), false);
+			dc.close();
+		}
 	}
 	
 	public void runAllAlgorithms(int nRuns) {
@@ -149,6 +189,20 @@ public class EvoGraph extends JApplet implements ActionListener {
 		optimalFound = algorithm.displayGraph().fitness <= optimalFitness;
 	}
 	
+	public boolean konverged(GraphInstance graph, int k) {
+		if (readings.size() < queueLength) {
+			readings.add(graph.fitness);
+			if(graph.numberOfEdgeCrossings <= cnLowerBounds[k]) {
+				return true;
+			}
+		} else {
+			readings.removeFirst();
+			readings.add(graph.fitness);
+			if(readings.getLast() - readings.getFirst() == 0 || graph.numberOfEdgeCrossings <= cnLowerBounds[k])
+				return true;
+		}
+		return false;
+	}
 	
 	public boolean checkConverged(GraphInstance graph) {
 		if (readings.size() < queueLength) {
@@ -246,7 +300,8 @@ public class EvoGraph extends JApplet implements ActionListener {
 	public static boolean checkEdgeCrossing(NodeInstance a, NodeInstance b, NodeInstance c, NodeInstance d) {
 		if (b == c || d == a || b == d)
 			return false;
-		return Line2D.linesIntersect(a.x, a.y, b.x, b.y, c.x, c.y, d.x, d.y);
+		//return Line2D.linesIntersect(a.x, a.y, b.x, b.y, c.x, c.y, d.x, d.y);
+		return Line2D.linesIntersect(a.realX, a.realY, b.realX, b.realY, c.realX, c.realY, d.realX, d.realY);
 	}
 	
 	/**
