@@ -92,7 +92,7 @@ public class EvoGraph extends JApplet implements ActionListener {
 		
 		//runAllAlgorithms(1);
 		
-		runKGraphs(18, 18, 30); //starting k, ending k, maximum # runs
+		runKGraphs(20, 50, 50); //starting k, ending k, maximum # runs
 
 //		for (int i = 0; i < 5; i++)
 //			algorithm.next();
@@ -124,13 +124,14 @@ public class EvoGraph extends JApplet implements ActionListener {
 			while(run < maxRuns) {
 				run++;
 				readings.clear();
+				queueLength = 30 - (i / 2);
 				converged = false;
 				GraphInstance graph;
 				do {
 					algorithm.next();
 					graph = algorithm.displayGraph();
 				} while (!konverged(graph, i));
-				dc.writeLine("Run " + run + " converged to " + graph.numberOfEdgeCrossings + " in " + (algorithm.getRuns() - readings.size() + 1) + " generations");
+				dc.writeLine("K" + i + " run " + run + " converged to " + graph.numberOfEdgeCrossings + " in " + (algorithm.getRuns() - readings.size() + 1) + " generations");
 				if(bestFound[i - first] == null || graph.numberOfEdgeCrossings < bestFound[i - first].numberOfEdgeCrossings) {
 					bestFound[i - first] = graph;
 					if(graph.numberOfEdgeCrossings <= cnLowerBounds[i]) {
