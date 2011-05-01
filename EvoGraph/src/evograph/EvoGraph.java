@@ -92,7 +92,7 @@ public class EvoGraph extends JApplet implements ActionListener {
 		
 		//runAllAlgorithms(1);
 		
-		runKGraphs(20, 50, 50); //starting k, ending k, maximum # runs
+		runKGraphs(24, 24, 50); //starting k, ending k, maximum # runs
 
 //		for (int i = 0; i < 5; i++)
 //			algorithm.next();
@@ -107,8 +107,8 @@ public class EvoGraph extends JApplet implements ActionListener {
 //		}
 	//System.out.println("total time for 10 runs = " + clock.diff() + " ms");
 
-		canvas.drawGraph(algorithm.displayGraph());
-		statusBar.setText(algorithm.displayText());
+		//canvas.drawGraph(algorithm.displayGraph());
+		//statusBar.setText(algorithm.displayText());
 		//checkOptimalFound();
 //		}
 	}
@@ -138,6 +138,7 @@ public class EvoGraph extends JApplet implements ActionListener {
 						dc.writeLine("Lower bound for K" + i + " found (" + graph.numberOfEdgeCrossings + ")");
 						break;
 					}
+					dc.writeLine("New best for K" + i + " found (" + graph.numberOfEdgeCrossings + ")");
 				}
 				algorithm.restart();
 			}
@@ -145,6 +146,7 @@ public class EvoGraph extends JApplet implements ActionListener {
 			dc = new KDataCollector("best-k" + i);
 			dc.writeLine(bestFound[i - first].printCoordinates(), false);
 			dc.close();
+			canvas.drawGraph(bestFound[i - first]);
 		}
 	}
 	
