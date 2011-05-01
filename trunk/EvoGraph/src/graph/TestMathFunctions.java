@@ -8,9 +8,22 @@ import evograph.EvoGraph;
 
 
 public class TestMathFunctions {
+
+	@Test
+	public void testPointAngleDistance() {
+		int[] coords = EvoGraph.calculateCoordinatesFromPointAngleDistance(100, 100, Math.PI/ 3, 50);
+		System.out.println("Coords = " + coords[0] + ", " + coords[1]);
+		coords = EvoGraph.calculateCoordinatesFromPointAngleDistance(100, 100, Math.PI, 50);
+		System.out.println("Coords = " + coords[0] + ", " + coords[1]);
+		coords = EvoGraph.calculateCoordinatesFromPointAngleDistance(100, 100, 5 * Math.PI/ 3, 50);
+		System.out.println("Coords = " + coords[0] + ", " + coords[1]);
+	}
 	
 	@Test
 	public void calculateAngleTest() {
+//		System.out.println(EvoGraph.calculateAngle(0,0,0,5));
+//		System.out.println(EvoGraph.calculateAngle(0,100,(int) (10*Math.sqrt(3)),90));
+//		System.out.println(EvoGraph.calculateAngle(100,100,100 - (int) (10*Math.sqrt(3)),90));
 		assertEquals(EvoGraph.calculateAngle(5, 32, 5, 32), Double.NaN, 0);
 		assertEquals(EvoGraph.calculateAngle(5, 32, 11, 32), Math.PI / 2, 0);
 		assertEquals(EvoGraph.calculateAngle(5, 32, 5, 34), Math.PI, 0);

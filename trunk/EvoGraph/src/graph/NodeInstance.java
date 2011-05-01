@@ -7,6 +7,8 @@ public class NodeInstance {
 	public int id;
 	public int x;
 	public int y;
+	public double distanceFromAnchor;
+	public double deltaAngle;
 	public double[] nodeDistances;
 	public HashMap<Integer, Double> edgeAngles;
 
