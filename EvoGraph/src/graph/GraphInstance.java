@@ -34,6 +34,27 @@ public class GraphInstance {
 		return printString;
 	}
 	
+	public String printOrientations() {
+		String printString = "\n***** Orientations \n";
+		for (int i = 6; i < nodeInstances.length; i += 3) {
+			printString += orientBit(nodeInstances[i - 6], nodeInstances[i - 3], nodeInstances[i]);
+		}
+		printString += "\n";
+		for (int i = 7; i < nodeInstances.length; i += 3) {
+			printString += orientBit(nodeInstances[i - 6], nodeInstances[i - 3], nodeInstances[i]);
+		}
+		printString += "\n";
+		for (int i = 8; i < nodeInstances.length; i += 3) {
+			printString += orientBit(nodeInstances[i - 6], nodeInstances[i - 3], nodeInstances[i]);
+		}
+		printString += "\n";
+		return printString;
+	}
+	
+	public int orientBit(NodeInstance n1, NodeInstance n2, NodeInstance n3) {
+    	return EvoGraph.orient(n1.realX, n1.realY, n2.realX, n2.realY, n3.realX, n3.realY) > 0 ? 1 : 0;
+    }
+	
 	public void centerGraph() {
 		double averageX = 0;
 		double averageY = 0;
