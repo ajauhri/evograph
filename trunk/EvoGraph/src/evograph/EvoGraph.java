@@ -92,7 +92,7 @@ public class EvoGraph extends JApplet implements ActionListener {
 		
 		//runAllAlgorithms(1);
 		
-		runKGraphs(24, 24, 50); //starting k, ending k, maximum # runs
+		runKGraphs(18, 18, 30); //starting k, ending k, maximum # runs
 
 //		for (int i = 0; i < 5; i++)
 //			algorithm.next();
@@ -145,6 +145,7 @@ public class EvoGraph extends JApplet implements ActionListener {
 			dc.close();
 			dc = new KDataCollector("best-k" + i);
 			dc.writeLine(bestFound[i - first].printCoordinates(), false);
+			dc.writeLine(bestFound[i - first].printOrientations(), false);
 			dc.close();
 			canvas.drawGraph(bestFound[i - first]);
 		}
@@ -328,5 +329,9 @@ public class EvoGraph extends JApplet implements ActionListener {
     	    closestPointY = y1 + u * yDelta;
     	}
     	return Graph.distanceFormula(x, y, closestPointX, closestPointY);
+    }
+    
+    public static int orient(int x1, int y1, int x2, int y2, int x3, int y3) {
+		return ((x1 * y2) + (y1 * x3) + (x2 * y3)) - ((y1 * x2) + (x1 * y3) + (y2 * x3));
     }
 }
