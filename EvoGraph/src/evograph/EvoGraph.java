@@ -18,11 +18,12 @@ import javax.swing.JLabel;
 import utils.Clock;
 
 import algorithms.IncrementalGraphAlgorithm;
-import algorithms.KGraphHeuristic;
 import algorithms.generationBased.ALPS;
 import algorithms.generationBased.GeneticAlgorithm;
 import algorithms.iterationBased.HillClimber;
 import algorithms.iterationBased.SimulatedAnnealing;
+import algorithms.kgraph.KGraphGA;
+import algorithms.kgraph.KGraphHeuristic;
 
 @SuppressWarnings("unused")
 public class EvoGraph extends JApplet implements ActionListener {
@@ -92,7 +93,7 @@ public class EvoGraph extends JApplet implements ActionListener {
 		
 		//runAllAlgorithms(1);
 		
-		runKGraphs(18, 18, 30); //starting k, ending k, maximum # runs
+		runKGraphs(19, 19, 1000); //starting k, ending k, maximum # runs
 
 //		for (int i = 0; i < 5; i++)
 //			algorithm.next();
@@ -119,7 +120,7 @@ public class EvoGraph extends JApplet implements ActionListener {
 		GraphInstance[] bestFound = new GraphInstance[last - first + 1];
 		for (int i = first; i <= last; i++) {
 			run = 0;
-			algorithm = new KGraphHeuristic(new FileToGraph("k" + i + ".rgf").createGraph());
+			algorithm = new KGraphGA(new FileToGraph("k" + i + ".rgf").createGraph());
 			KDataCollector dc = new KDataCollector("k" + i);
 			while(run < maxRuns) {
 				run++;
