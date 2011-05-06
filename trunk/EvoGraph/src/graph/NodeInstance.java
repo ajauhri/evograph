@@ -9,6 +9,7 @@ public class NodeInstance {
 	public int y;
 	public int realX;
 	public int realY;
+	public int age;
 	public double distanceFromAnchor;
 	public double deltaAngle;
 	public double[] nodeDistances;
