@@ -1,6 +1,9 @@
 package graph;
 
-public class Graph { //Undirected graph
+import java.io.Serializable;
+
+public class Graph implements Serializable { //Undirected graph
+	private static final long serialVersionUID = 1L;
 	public final Node[] nodes;
 	public static int nNodes;
 	public static int nEdges = 0;

@@ -41,12 +41,7 @@ public class StochasticAlgorithm {
 	}
 
 	public GraphInstance copyGraphInstance(GraphInstance graphInstance) {
-		GraphInstance newGraphInstance = new GraphInstance(graph);
-		for (int i = 0; i < newGraphInstance.nodeInstances.length; i++) {
-			newGraphInstance.nodeInstances[i].x = graphInstance.nodeInstances[i].x;
-			newGraphInstance.nodeInstances[i].y = graphInstance.nodeInstances[i].y;
-		}
-		return newGraphInstance;
+		return graphInstance.copy();
 	}
 
 	public GraphInstance randomIndividual() {

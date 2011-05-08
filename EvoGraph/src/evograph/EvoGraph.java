@@ -24,6 +24,7 @@ import algorithms.iterationBased.HillClimber;
 import algorithms.iterationBased.SimulatedAnnealing;
 import algorithms.kgraph.KGraphGA;
 import algorithms.kgraph.KGraphHeuristic;
+import algorithms.kgraph.KGraphSA;
 
 @SuppressWarnings("unused")
 public class EvoGraph extends JApplet implements ActionListener {
@@ -39,7 +40,7 @@ public class EvoGraph extends JApplet implements ActionListener {
 	public static double nodeSeparationMultiplier = 1;
 	public static double orthogonalityMultiplier = 0;
 	
-	public static String rgf = "k20";
+	public static String rgf = "k19";
 	public static double optimalFitness = 5.01;
 	
 	public static int[] cnLowerBounds = {0,0,0,0,0,1,3,9,19,36,62,102,153,229,324,447,603,
@@ -63,7 +64,7 @@ public class EvoGraph extends JApplet implements ActionListener {
 		clock = new Clock();
 		readings = new LinkedList<Double>();
 		rawGraph = new FileToGraph(rgf + ".rgf").createGraph();
-		algorithm = new KGraphHeuristic(rawGraph);
+		algorithm = new KGraphSA(rawGraph);
 		//algorithm = new GeneticAlgorithm(rawGraph);
 		//algorithm = new SimulatedAnnealing(new FileToGraph("david-fig11.rgf").createGraph());
 		//algorithm = new HillClimber(new FileToGraph("complex-octo.rgf").createGraph());
@@ -88,12 +89,14 @@ public class EvoGraph extends JApplet implements ActionListener {
 		
 //		clock.init();
 //		for (int i = 0; i < 5; i++)
-//			algorithm.next();
+		algorithm.next();
+		canvas.drawGraph(algorithm.displayGraph());
+		statusBar.setText(algorithm.displayText());
 //		System.out.println("total time for 5 runs = " + clock.diff() + " ms");
 		
 		//runAllAlgorithms(1);
 		
-		runKGraphs(19, 19, 1000); //starting k, ending k, maximum # runs
+		//runKGraphs(19, 19, 1000); //starting k, ending k, maximum # runs
 
 //		for (int i = 0; i < 5; i++)
 //			algorithm.next();
@@ -121,11 +124,13 @@ public class EvoGraph extends JApplet implements ActionListener {
 		for (int i = first; i <= last; i++) {
 			run = 0;
 			algorithm = new KGraphGA(new FileToGraph("k" + i + ".rgf").createGraph());
+			//algorithm = new KGraphSA(new FileToGraph("k" + i + ".rgf").createGraph());
 			KDataCollector dc = new KDataCollector("k" + i);
 			while(run < maxRuns) {
 				run++;
 				readings.clear();
 				queueLength = 30 - (i / 2);
+				//queueLength = 200 - (i * 3);
 				converged = false;
 				GraphInstance graph;
 				do {
@@ -334,5 +339,9 @@ public class EvoGraph extends JApplet implements ActionListener {
     
     public static int orient(int x1, int y1, int x2, int y2, int x3, int y3) {
 		return ((x1 * y2) + (y1 * x3) + (x2 * y3)) - ((y1 * x2) + (x1 * y3) + (y2 * x3));
+    }
+    
+    public static double randomDouble(double min, double max) {
+    	return Math.random() * Math.abs(max - min) + Math.min(max, min);
     }
 }

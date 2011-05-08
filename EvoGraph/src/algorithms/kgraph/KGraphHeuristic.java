@@ -51,7 +51,7 @@ public class KGraphHeuristic extends StochasticAlgorithm implements IncrementalG
 
 	@Override
 	public void updateGraph() {
-		displayGraph().calculateFitness();
+		displayGraph().calculateKFitness();
 	}
 
 	@Override

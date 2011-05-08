@@ -1,12 +1,18 @@
 package graph;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Vector;
 
 import evograph.EvoGraph;
 import evograph.GraphCanvas;
 
-public class GraphInstance {
+public class GraphInstance implements Serializable {
+	private static final long serialVersionUID = 1L;
 	public double fitness;
 	public double edgeFitness;
 	public double angularResolution;
@@ -241,6 +247,20 @@ public class GraphInstance {
 			return 1 - Math.pow(1 - (Math.abs(angle - (3 * (Math.PI / 2)))) / (Math.PI / 4), 2);
 		} else {
 			return 1 - Math.pow(1 - (2 * Math.PI - angle) / (Math.PI / 4), 2);
+		}
+	}
+	
+	public GraphInstance copy() {
+		try {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ObjectOutputStream oos = new ObjectOutputStream(baos);
+			oos.writeObject(this);
+			ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+			ObjectInputStream ois = new ObjectInputStream(bais);
+			return (GraphInstance) ois.readObject();
+		} catch (Exception e) {
+			System.out.println("WTF why are you null");
+			return null;
 		}
 	}
 }
