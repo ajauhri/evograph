@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Vector;
 
-import algorithms.IncrementalGraphAlgorithm;
+
 
 import evograph.EvoGraph;
 import graph.GraphInstance;
@@ -12,8 +12,8 @@ import graph.Graph;
 public class KGraphALPS extends KGraphHeuristic {
 	public ArrayList<Vector<GraphInstance>> population;
 	int populationSize = 100;
-	int elites = 10;
-	static final int age_gap_factor = 20;
+	double elitism = 0.1;
+	final int age_gap_factor = 20;
 	ArrayList<Integer> fibonacciList;
 	public int layerCount;
 	int generation;
@@ -22,6 +22,8 @@ public class KGraphALPS extends KGraphHeuristic {
 		super(graph);
 		restart();
 	}
+	
+	
 
 	@Override
 	public void restart() {
@@ -41,7 +43,6 @@ public class KGraphALPS extends KGraphHeuristic {
 		else if (generation % (age_gap_factor * fibonacciList.get(layerCount)) == 0) {
 			initializeLayerZeroPopulation();
 			layerCount += 1;
-			/*** add fibonacci number fib(n+1) = fib(n) + fib(n-1) ***/
 			updateFibonacciList();
 			upgradeIndividuals();
 			nextGeneration();
@@ -70,12 +71,13 @@ public class KGraphALPS extends KGraphHeuristic {
 	}
 	
 	public void initializeLayerZeroPopulation() {
+		setAnchorPoints();
 		Vector<GraphInstance> layerPopulation = new Vector<GraphInstance>();
 		
 		for (int i = 0; i < populationSize; i++) {
 			GraphInstance individual = randomIndividual();
 			individual.age = 0;
-			individual.calculateFitness();
+			individual.calculateKFitness();
 			layerPopulation.add(individual);
 		}
 		
@@ -92,7 +94,7 @@ public class KGraphALPS extends KGraphHeuristic {
 			/*** perform recombinations and mutations for the non-elite population ***/
 			for (int iterator = elites ; iterator < population.get(layerNumber).size() - elitism; iterator++) {
 				GraphInstance parent1 = population.get(layerNumber).get(iterator);
-				GraphInstance parent2, child;
+				GraphInstance parent2;
 				
 				/*** recombination step ***/
 				/*** choose an elite parent either from nth layer, or (n-1)th layer with either probability of 0.5 ***/
@@ -105,19 +107,13 @@ public class KGraphALPS extends KGraphHeuristic {
 						parent2 = population.get(layerNumber).get((int) (Math.random() * elites));
 					}
 				}
-				child = recombine(parent1, parent2);
+				recombineK(parent1, parent2);
 
-				/*** offspring inherits the age of of oldest parent ***/
-				child.age = (parent1.age < parent2.age) ? parent2.age : parent1.age;
-				
 				/*** mutation steps ***/
-				simpleMutate(child, 0.01);
-				gaussianMutate(child, 0.05);
+				mutate(parent2, 0.2, 0.4);
 				
 				/***other steps of sanity***/
-				child.centerGraph();
-				child.calculateFitness();
-				population.get(layerNumber).set(iterator, child);
+				parent2.calculateKFitness();
 			}
 			sortPopulationByFitness(layerNumber);
 		}
@@ -137,7 +133,7 @@ public class KGraphALPS extends KGraphHeuristic {
 			 ***/
 			int fibonacciFactor = fibonacciList.get(layerNumber);
 			
-			int layer_age_limit = ALPS.age_gap_factor * fibonacciFactor;
+			int layer_age_limit = age_gap_factor * fibonacciFactor;
 			
 			for (int iterator = 0; iterator < layerPopulation.size(); iterator++) {
 				if (layerPopulation.get(iterator).age > layer_age_limit) {
@@ -156,6 +152,72 @@ public class KGraphALPS extends KGraphHeuristic {
 					iterator--;
 					
 				}
+			}
+		}
+	}
+	
+	
+	public void recombineK(GraphInstance parent1, GraphInstance parent2) {
+		if(Graph.nNodes % 3 == 0) {
+			for (int i = 1; i < graph.nodes.length / 3; i++) {
+				if (Math.random() < parent1.fitness / (parent1.fitness + parent2.fitness)) {
+					for (int j = i * 3; j < (i + 1) * 3; j++) {
+						parent2.nodeInstances[j].setRealX(parent1.nodeInstances[j].realX);
+						parent2.nodeInstances[j].setRealY(parent1.nodeInstances[j].realY);
+						parent2.nodeInstances[j].distanceFromAnchor = parent1.nodeInstances[j].distanceFromAnchor;
+						parent2.nodeInstances[j].deltaAngle = parent1.nodeInstances[j].deltaAngle;
+						parent2.nodeInstances[j].age = (parent1.age < parent2.age) ? parent2.age : parent1.age;
+					}
+				}
+			}
+		} else {
+			for (int i = 3; i < graph.nodes.length; i++) {
+				if (Math.random() < (parent1.fitness / (parent1.fitness + parent2.fitness))) {
+					parent2.nodeInstances[i].setRealX(parent1.nodeInstances[i].realX);
+					parent2.nodeInstances[i].setRealY(parent1.nodeInstances[i].realY);
+					parent2.nodeInstances[i].distanceFromAnchor = parent1.nodeInstances[i].distanceFromAnchor;
+					parent2.nodeInstances[i].deltaAngle = parent1.nodeInstances[i].deltaAngle;
+					parent2.nodeInstances[i].age = (parent1.age < parent2.age) ? parent2.age : parent1.age;
+				}
+			}
+		}
+	}
+	
+	public void mutate(GraphInstance individual, double distanceProbability, double angleProbability) {
+		if(Graph.nNodes % 3 == 0) {
+			for (int i = 1; i < graph.nodes.length / 3; i++) {
+				boolean mutated = false;
+				if (Math.random() < distanceProbability) {
+					for (int j = i * 3; j < (i + 1) * 3; j++) {
+						individual.nodeInstances[j].distanceFromAnchor += (rand.nextGaussian() * distanceMutationFactor);
+						mutated = true;
+					}
+				}
+				if (Math.random() < angleProbability ) {
+					for (int j = i * 3; j < (i + 1) * 3; j++) {
+						individual.nodeInstances[j].deltaAngle += (rand.nextGaussian() * angleMutationFactor);
+						mutated = true;
+					}
+				}
+				if (mutated) {
+					for (int j = i * 3; j < (i + 1) * 3; j++) {
+						calculateCoordsFromDistanceAndAngle(individual.nodeInstances[j]);
+					}
+				}
+			}
+		} else {
+			for (int i = 3; i < graph.nodes.length; i++) {
+				boolean mutated = false;
+				if (Math.random() < distanceProbability) {
+					individual.nodeInstances[i].distanceFromAnchor += (rand.nextGaussian() * distanceMutationFactor);
+					mutated = true;
+				}
+				if (Math.random() < angleProbability) {
+					individual.nodeInstances[i].deltaAngle += (rand.nextGaussian() * angleMutationFactor);
+					mutated = true;
+				}
+				if (mutated)
+					calculateCoordsFromDistanceAndAngle(individual.nodeInstances[i]);
 			}
 		}
 	}
