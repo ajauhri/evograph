@@ -1,8 +1,10 @@
 package graph;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
-public class NodeInstance {
+public class NodeInstance implements Serializable {
+	private static final long serialVersionUID = 1L;
 	public Node node;
 	public int id;
 	public int x;
