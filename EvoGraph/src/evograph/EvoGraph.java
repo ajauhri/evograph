@@ -89,14 +89,14 @@ public class EvoGraph extends JApplet implements ActionListener {
 		
 //		clock.init();
 //		for (int i = 0; i < 5; i++)
-		algorithm.next();
-		canvas.drawGraph(algorithm.displayGraph());
-		statusBar.setText(algorithm.displayText());
+		//algorithm.next();
+		//canvas.drawGraph(algorithm.displayGraph());
+		//statusBar.setText(algorithm.displayText());
 //		System.out.println("total time for 5 runs = " + clock.diff() + " ms");
 		
 		//runAllAlgorithms(1);
 		
-		//runKGraphs(19, 19, 1000); //starting k, ending k, maximum # runs
+		runKGraphs(24, 24, 20); //starting k, ending k, maximum # runs
 
 //		for (int i = 0; i < 5; i++)
 //			algorithm.next();
@@ -123,10 +123,12 @@ public class EvoGraph extends JApplet implements ActionListener {
 		GraphInstance[] bestFound = new GraphInstance[last - first + 1];
 		for (int i = first; i <= last; i++) {
 			run = 0;
-			algorithm = new KGraphGA(new FileToGraph("k" + i + ".rgf").createGraph());
+			algorithm = new GeneticAlgorithm(new FileToGraph("k" + i + ".rgf").createGraph());
+			//algorithm = new KGraphGA(new FileToGraph("k" + i + ".rgf").createGraph());
 			//algorithm = new KGraphSA(new FileToGraph("k" + i + ".rgf").createGraph());
 			KDataCollector dc = new KDataCollector("k" + i);
 			while(run < maxRuns) {
+				long startTime = System.currentTimeMillis();
 				run++;
 				readings.clear();
 				queueLength = 30 - (i / 2);
@@ -142,11 +144,13 @@ public class EvoGraph extends JApplet implements ActionListener {
 					bestFound[i - first] = graph;
 					if(graph.numberOfEdgeCrossings <= cnLowerBounds[i]) {
 						dc.writeLine("Lower bound for K" + i + " found (" + graph.numberOfEdgeCrossings + ")");
-						break;
+						//break;
+					} else {
+						dc.writeLine("New best for K" + i + " found (" + graph.numberOfEdgeCrossings + ")");
 					}
-					dc.writeLine("New best for K" + i + " found (" + graph.numberOfEdgeCrossings + ")");
 				}
 				algorithm.restart();
+				System.out.println("Run took " + (System.currentTimeMillis() - startTime) + " ms");
 			}
 			dc.close();
 			dc = new KDataCollector("best-k" + i);
@@ -310,8 +314,8 @@ public class EvoGraph extends JApplet implements ActionListener {
 	public static boolean checkEdgeCrossing(NodeInstance a, NodeInstance b, NodeInstance c, NodeInstance d) {
 		if (b == c || d == a || b == d)
 			return false;
-		//return Line2D.linesIntersect(a.x, a.y, b.x, b.y, c.x, c.y, d.x, d.y);
-		return Line2D.linesIntersect(a.realX, a.realY, b.realX, b.realY, c.realX, c.realY, d.realX, d.realY);
+		return Line2D.linesIntersect(a.x, a.y, b.x, b.y, c.x, c.y, d.x, d.y);
+		//return Line2D.linesIntersect(a.realX, a.realY, b.realX, b.realY, c.realX, c.realY, d.realX, d.realY);
 	}
 	
 	/**

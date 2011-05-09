@@ -36,7 +36,8 @@ public class GraphInstance implements Serializable {
 	public String printCoordinates() {
 		String printString = "" + nodeInstances.length;
 		for (int i = 0; i < nodeInstances.length; i++)
-			printString += "\n" + nodeInstances[i].realX + " " + nodeInstances[i].realY;
+			printString += "\n" + nodeInstances[i].x + " " + nodeInstances[i].y;
+		//printString += "\n" + nodeInstances[i].realX + " " + nodeInstances[i].realY;
 		return printString;
 	}
 	
@@ -58,7 +59,8 @@ public class GraphInstance implements Serializable {
 	}
 	
 	public int orientBit(NodeInstance n1, NodeInstance n2, NodeInstance n3) {
-    	return EvoGraph.orient(n1.realX, n1.realY, n2.realX, n2.realY, n3.realX, n3.realY) > 0 ? 1 : 0;
+    	//return EvoGraph.orient(n1.realX, n1.realY, n2.realX, n2.realY, n3.realX, n3.realY) > 0 ? 1 : 0;
+    	return EvoGraph.orient(n1.x, n1.y, n2.x, n2.y, n3.x, n3.y) > 0 ? 1 : 0;
     }
 	
 	public void centerGraph() {

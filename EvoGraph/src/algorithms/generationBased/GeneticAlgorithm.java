@@ -51,7 +51,7 @@ public class GeneticAlgorithm extends GenerationBasedAlgorithm implements Increm
 	public void nextGeneration() {
 		generation++;
 		int elites = (int) (populationSize * elitism);
-		for (int i = elites; i < populationSize - elites; i++) {
+		for (int i = elites; i < populationSize; i++) {
 			GraphInstance parent1 =  population.get((int) (Math.random() * elites));
 			GraphInstance parent2 = population.get(i);
 			GraphInstance child = recombine(parent1, parent2);
@@ -59,13 +59,8 @@ public class GeneticAlgorithm extends GenerationBasedAlgorithm implements Increm
 			gaussianMutate(child, 0.05);
 			child.centerGraph();
 			population.set(i, child);
-			child.calculateFitness();
-		}
-		for (int i = populationSize - elites; i < populationSize; i++) {
-			GraphInstance child = randomIndividual();
-			child.centerGraph();
-			population.set(i, child);
-			child.calculateFitness();
+			//child.calculateFitness();
+			child.calculateKFitness();
 		}
 		sortPopulationByFitness();
 		//System.out.println("Average fitness: " + calculateAverageFitness());
