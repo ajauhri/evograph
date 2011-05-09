@@ -31,6 +31,6 @@ public class GenerationBasedAlgorithm extends StochasticAlgorithm {
 	
 	public int getRuns() {
 		// TODO Auto-generated method stub
-		return generation * populationSize;
+		return generation; // * populationSize;
 	}
 }
