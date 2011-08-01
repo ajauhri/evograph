@@ -4,7 +4,6 @@ import java.util.Comparator;
 import java.util.Random;
 
 import evograph.EvoGraph;
-import evograph.GraphCanvas;
 
 import graph.GraphInstance;
 import graph.Graph;
@@ -19,23 +18,23 @@ public class StochasticAlgorithm {
 
 	public void gaussianMutate(GraphInstance individual, double mutationProbability) {
 		Random rand = new Random();
-		int canvasWidth = GraphCanvas.canvasWidth;
-		int canvasHeight = GraphCanvas.canvasHeight;
+		int canvasWidth = EvoGraph.canvasWidth;
+		int canvasHeight = EvoGraph.canvasHeight;
 		for (int i = 0; i < graph.nodes.length; i++) {
 			if (EvoGraph.probability(mutationProbability)) {
-				individual.nodeInstances[i].x = EvoGraph.boundaryChecker(individual.nodeInstances[i].x + (int) (rand.nextGaussian() * (canvasWidth / graph.nodes.length)), canvasWidth);
-				individual.nodeInstances[i].y = EvoGraph.boundaryChecker(individual.nodeInstances[i].y + (int) (rand.nextGaussian() * (canvasHeight / graph.nodes.length)), canvasHeight);
+				individual.nodeInstances[i].setRealX(EvoGraph.boundaryChecker(individual.nodeInstances[i].x + (int) (rand.nextGaussian() * (canvasWidth / graph.nodes.length)), canvasWidth) * 100);
+				individual.nodeInstances[i].setRealY(EvoGraph.boundaryChecker(individual.nodeInstances[i].y + (int) (rand.nextGaussian() * (canvasHeight / graph.nodes.length)), canvasHeight) * 100);
 			}
 		}
 	}
 	
 	public void simpleMutate(GraphInstance individual, double mutationProbability) {
-		int canvasWidth = GraphCanvas.canvasWidth;
-		int canvasHeight = GraphCanvas.canvasHeight;
+		int canvasWidth = EvoGraph.canvasWidth;
+		int canvasHeight = EvoGraph.canvasHeight;
 		for (int i = 0; i < graph.nodes.length; i++) {
 			if (EvoGraph.probability(mutationProbability)) {
-				individual.nodeInstances[i].x = (int) (Math.random() * canvasWidth);
-				individual.nodeInstances[i].y = (int) (Math.random() * canvasHeight);
+				individual.nodeInstances[i].setRealX((int) (Math.random() * canvasWidth) * 100);
+				individual.nodeInstances[i].setRealY((int) (Math.random() * canvasHeight) * 100);
 			}
 		}
 	}
@@ -47,8 +46,8 @@ public class StochasticAlgorithm {
 	public GraphInstance randomIndividual() {
 		GraphInstance individual = new GraphInstance(graph);
 		for (NodeInstance n : individual.nodeInstances) {
-			n.x = (int) (Math.random() * GraphCanvas.canvasWidth); // initialize 
-			n.y = (int) (Math.random() * GraphCanvas.canvasHeight);
+			n.setRealX((int) (Math.random() * EvoGraph.canvasWidth) * 100); // initialize 
+			n.setRealY((int) (Math.random() * EvoGraph.canvasHeight) * 100);
 		}
 		return individual;
 	}

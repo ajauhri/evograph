@@ -1,6 +1,5 @@
 package evograph;
 
-import graph.Graph;
 import graph.GraphInstance;
 import graph.Node;
 import graph.NodeInstance;
@@ -12,16 +11,13 @@ import java.awt.Graphics;
 
 public class GraphCanvas extends Canvas {
 	private static final long serialVersionUID = 1L;
-	public static double optimalEdgeLength;
-	public static int canvasWidth;
-	public static int canvasHeight;
 	public GraphInstance graph;
 	public NodeInstance draggedNode;
 	public int dragOffsetX, dragOffsetY;
-	public EvoGraph applet;
+	public Standalone applet;
 	public final int padding = 15;
 
-	public GraphCanvas(EvoGraph applet) {
+	public GraphCanvas(Standalone applet) {
 		super();
 		this.applet = applet;
 		this.setBackground(Color.WHITE);
@@ -60,13 +56,9 @@ public class GraphCanvas extends Canvas {
 		}
 	}
 	
-	public void calculateOptimalEdgeLength() {
-		optimalEdgeLength = Math.sqrt((getWidth() * getHeight())/Graph.nEdges);
-	}
-	
 	public void setCanvasWidthAndHeight() {
-		canvasWidth = this.getWidth() - (padding * 2);
-		canvasHeight = this.getHeight() - (padding * 2);
+		EvoGraph.canvasWidth = this.getWidth() - (padding * 2);
+		EvoGraph.canvasHeight = this.getHeight() - (padding * 2);
 	}
 	
 	/** Mouse functions **/
@@ -87,8 +79,8 @@ public class GraphCanvas extends Canvas {
 
 	  public boolean mouseDrag(Event evt, int x, int y) {
 		if (draggedNode != null) {
-			draggedNode.x = x + dragOffsetX;
-			draggedNode.y = y + dragOffsetY;
+			draggedNode.setRealX((x + dragOffsetX) * 100);
+			draggedNode.setRealY((y + dragOffsetY) * 100);
 		    repaint();
 		}
 	    return true;
@@ -97,7 +89,6 @@ public class GraphCanvas extends Canvas {
 	  public boolean mouseUp (Event evt, int x, int y) {
 		draggedNode = null;
 		applet.updateGraph();
-		//TODO: calculate fitness and add to population
 	    repaint();
 	    return true;
 	  }

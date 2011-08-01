@@ -1,4 +1,4 @@
-package evograph;
+package utils;
 
 
 import java.io.BufferedReader;

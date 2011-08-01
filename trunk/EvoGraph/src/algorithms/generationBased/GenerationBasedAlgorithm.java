@@ -19,18 +19,17 @@ public class GenerationBasedAlgorithm extends StochasticAlgorithm {
 		for (int i = 0; i < graph.nodes.length; i++) {
 			double probability = EvoGraph.probability(.5) ? 0.5 : parent1.fitness / (parent1.fitness + parent2.fitness);
 			if (EvoGraph.probability(probability)) {
-				child.nodeInstances[i].x = parent1.nodeInstances[i].x;
-				child.nodeInstances[i].y = parent1.nodeInstances[i].y;
+				child.nodeInstances[i].setRealX(parent1.nodeInstances[i].realX);
+				child.nodeInstances[i].setRealY(parent1.nodeInstances[i].realY);
 			} else {
-				child.nodeInstances[i].x = parent2.nodeInstances[i].x;
-				child.nodeInstances[i].y = parent2.nodeInstances[i].y;	
+				child.nodeInstances[i].setRealX(parent2.nodeInstances[i].realX);
+				child.nodeInstances[i].setRealY(parent2.nodeInstances[i].realY);
 			}
 		}
 		return child;
 	}
 	
 	public int getRuns() {
-		// TODO Auto-generated method stub
 		return generation; // * populationSize;
 	}
 }
