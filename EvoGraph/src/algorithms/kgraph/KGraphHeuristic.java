@@ -8,7 +8,6 @@ import algorithms.IncrementalGraphAlgorithm;
 import algorithms.StochasticAlgorithm;
 
 import evograph.EvoGraph;
-import evograph.GraphCanvas;
 
 import graph.Graph;
 import graph.GraphInstance;
@@ -66,16 +65,16 @@ public class KGraphHeuristic extends StochasticAlgorithm implements IncrementalG
 	
 	public void setAnchorPoints() {
 		double width, height, xOffset, yOffset;
-		if ((double) GraphCanvas.canvasHeight >= (double) (GraphCanvas.canvasWidth * Math.sqrt(3) / 2)) {
-			width = GraphCanvas.canvasWidth;
-			height = GraphCanvas.canvasWidth * Math.sqrt(3) / 2;
+		if ((double) EvoGraph.canvasHeight >= (double) (EvoGraph.canvasWidth * Math.sqrt(3) / 2)) {
+			width = EvoGraph.canvasWidth;
+			height = EvoGraph.canvasWidth * Math.sqrt(3) / 2;
 			xOffset = 0;
-			yOffset = (GraphCanvas.canvasHeight - height) / 2;
+			yOffset = (EvoGraph.canvasHeight - height) / 2;
 		} else {
-			height = GraphCanvas.canvasHeight;
-			width = GraphCanvas.canvasHeight * 2 / Math.sqrt(3);
+			height = EvoGraph.canvasHeight;
+			width = EvoGraph.canvasHeight * 2 / Math.sqrt(3);
 			yOffset = 0;
-			xOffset = (GraphCanvas.canvasWidth - width) / 2;
+			xOffset = (EvoGraph.canvasWidth - width) / 2;
 		}
 		anchorPoints[0] = new Point((int) (100 * xOffset), (int) (100 * (height + yOffset)));
 		anchorPoints[1] = new Point((int) (100 * (xOffset + (width / 2))), (int) (100 * yOffset));
