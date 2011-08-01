@@ -4,10 +4,8 @@ import java.util.Collections;
 import java.util.Vector;
 
 import algorithms.IncrementalGraphAlgorithm;
-import evograph.GraphCanvas;
 import graph.GraphInstance;
 import graph.Graph;
-import graph.NodeInstance;
 
 public class GeneticAlgorithm extends GenerationBasedAlgorithm implements IncrementalGraphAlgorithm {
 	public Vector<GraphInstance> population;
@@ -32,7 +30,7 @@ public class GeneticAlgorithm extends GenerationBasedAlgorithm implements Increm
 	}
 
 	@Override
-	public GraphInstance displayGraph() { //Return fittest individual
+	public GraphInstance displayGraph() {
 		return population.get(0);
 	}
 
@@ -44,7 +42,6 @@ public class GeneticAlgorithm extends GenerationBasedAlgorithm implements Increm
 
 	@Override
 	public void updateGraph() {
-		//((GGraph) graph).calculateFitness();
 		((GraphInstance) displayGraph()).calculateFitness();
 	}
 	
@@ -59,11 +56,9 @@ public class GeneticAlgorithm extends GenerationBasedAlgorithm implements Increm
 			gaussianMutate(child, 0.05);
 			child.centerGraph();
 			population.set(i, child);
-			//child.calculateFitness();
-			child.calculateKFitness();
+			child.calculateFitness();
 		}
 		sortPopulationByFitness();
-		//System.out.println("Average fitness: " + calculateAverageFitness());
 	}
 	
 	public void initializePopulation() {
@@ -74,15 +69,6 @@ public class GeneticAlgorithm extends GenerationBasedAlgorithm implements Increm
 		}
 		sortPopulationByFitness();
 		generation++;
-	}
-	
-	public GraphInstance randomIndividual() {
-		GraphInstance individual = new GraphInstance(graph);
-		for (NodeInstance n : individual.nodeInstances) {
-			n.setRealX((int) (100 * Math.random() * GraphCanvas.canvasWidth)); //initialize with random x, y
-			n.setRealY((int) (100 * Math.random() * GraphCanvas.canvasHeight));
-		}
-		return individual;
 	}
 	
 	public double calculateAverageFitness() {

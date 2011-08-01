@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.Vector;
 
 import evograph.EvoGraph;
-import evograph.GraphCanvas;
 
 public class GraphInstance implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -37,7 +36,13 @@ public class GraphInstance implements Serializable {
 		String printString = "" + nodeInstances.length;
 		for (int i = 0; i < nodeInstances.length; i++)
 			printString += "\n" + nodeInstances[i].x + " " + nodeInstances[i].y;
-		//printString += "\n" + nodeInstances[i].realX + " " + nodeInstances[i].realY;
+		return printString;
+	}
+	
+	public String printRealCoordinates() {
+		String printString = "" + nodeInstances.length;
+		for (int i = 0; i < nodeInstances.length; i++)
+			printString += "\n" + nodeInstances[i].realX + " " + nodeInstances[i].realY;
 		return printString;
 	}
 	
@@ -59,8 +64,7 @@ public class GraphInstance implements Serializable {
 	}
 	
 	public int orientBit(NodeInstance n1, NodeInstance n2, NodeInstance n3) {
-    	//return EvoGraph.orient(n1.realX, n1.realY, n2.realX, n2.realY, n3.realX, n3.realY) > 0 ? 1 : 0;
-    	return EvoGraph.orient(n1.x, n1.y, n2.x, n2.y, n3.x, n3.y) > 0 ? 1 : 0;
+    	return EvoGraph.orient(n1.realX, n1.realY, n2.realX, n2.realY, n3.realX, n3.realY) > 0 ? 1 : 0;
     }
 	
 	public void centerGraph() {
@@ -72,8 +76,8 @@ public class GraphInstance implements Serializable {
 		}
 		averageX /= nodeInstances.length;
 		averageY /= nodeInstances.length;
-		int canvasWidth = GraphCanvas.canvasWidth;
-		int canvasHeight = GraphCanvas.canvasHeight;
+		int canvasWidth = EvoGraph.canvasWidth;
+		int canvasHeight = EvoGraph.canvasHeight;
 		int deltaX = (int) ((canvasWidth / 2) - averageX);
 		int deltaY = (int) ((canvasHeight / 2) - averageY);
 		for (NodeInstance n : nodeInstances) {
@@ -143,7 +147,7 @@ public class GraphInstance implements Serializable {
 		calculateEdgeFitness();
 		calculateNodeSeparation();
 		calculateEdgeTunneling();
-		//fitness = (double) (numberOfEdgeCrossings + 1) * (edgeFitness + angularResolution + nodeSeparation + edgeTunneling + orthogonality + 1);
+		
 		fitness = ((numberOfEdgeCrossings * EvoGraph.edgeCrossingsMultiplier) + 1) *
 					(edgeFitness * EvoGraph.edgeFitnessMultiplier + 
 					angularResolution * EvoGraph.angularResolutionMultiplier + 
@@ -178,19 +182,17 @@ public class GraphInstance implements Serializable {
 		nodeSeparation = 0;
 		for (int i = 0; i < nodeInstances.length - 1; i++) {
 			for (int j = i + 1; j < nodeInstances[i].nodeDistances.length; j++) {
-				if (!nodeInstances[i].node.connectedNodes.containsKey(j) && nodeInstances[i].nodeDistances[j] < GraphCanvas.optimalEdgeLength)
+				if (!nodeInstances[i].node.connectedNodes.containsKey(j) && nodeInstances[i].nodeDistances[j] < EvoGraph.optimalEdgeLength)
 					nodeSeparation += nodeSeparationPenalty(nodeInstances[i].nodeDistances[j]);
 			}
 		}
 	}
 	
 	public  static double nodeSeparationPenalty(double nodeDistance) {
-		return Math.pow(GraphCanvas.optimalEdgeLength - nodeDistance, 2) / Math.pow(GraphCanvas.optimalEdgeLength, 2);
+		return Math.pow(EvoGraph.optimalEdgeLength - nodeDistance, 2) / Math.pow(EvoGraph.optimalEdgeLength, 2);
 	}
 	
 	public void calculateEdgeTunneling() {
-		//System.out.println();
-		//System.out.println("=================");
 		edgeTunneling = 0;
 		for (int i = 0; i < nodeInstances.length; i++) {
 			for (int j = 0; j < nodeInstances.length; j++) {
@@ -200,7 +202,6 @@ public class GraphInstance implements Serializable {
 					if (n.id == i || n.id < j)
 						continue;
 					double distance = EvoGraph.distanceToSegment(nodeInstances[i].x, nodeInstances[i].y, nodeInstances[j].x, nodeInstances[j].y, nodeInstances[n.id].x, nodeInstances[n.id].y);
-					//System.out.println("Node " + i + " is distance " + distance + " from edge (" + j + ", " + n.id + ")");
 					edgeTunneling += edgeTunnelingPenalty(distance);
 				}
 				
@@ -230,12 +231,12 @@ public class GraphInstance implements Serializable {
 	}
 	
 	public static double edgeFitnessPenalty(double edgeLength) {
-		double maxLength = Math.sqrt(Math.pow(GraphCanvas.canvasHeight, 2) + Math.pow(GraphCanvas.canvasWidth, 2));  
-		double unscaledPenalty = Math.pow(GraphCanvas.optimalEdgeLength - edgeLength, 2);
-		if (edgeLength > GraphCanvas.optimalEdgeLength)
+		double maxLength = Math.sqrt(Math.pow(EvoGraph.canvasHeight, 2) + Math.pow(EvoGraph.canvasWidth, 2));  
+		double unscaledPenalty = Math.pow(EvoGraph.optimalEdgeLength - edgeLength, 2);
+		if (edgeLength > EvoGraph.optimalEdgeLength)
 			return unscaledPenalty / Math.pow(maxLength, 2);
 		else
-			return unscaledPenalty / Math.pow(GraphCanvas.optimalEdgeLength, 2);
+			return unscaledPenalty / Math.pow(EvoGraph.optimalEdgeLength, 2);
 	}
 	
 	public static double orthogonalityPenalty(double angle) {

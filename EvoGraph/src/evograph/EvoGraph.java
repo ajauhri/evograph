@@ -1,6 +1,5 @@
 package evograph;
 
-import graph.FileToGraph;
 import graph.Graph;
 import graph.GraphInstance;
 import graph.NodeInstance;
@@ -16,6 +15,8 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 
 import utils.Clock;
+import utils.DataCollector;
+import utils.FileToGraph;
 
 import algorithms.IncrementalGraphAlgorithm;
 import algorithms.generationBased.ALPS;
@@ -27,29 +28,27 @@ import algorithms.kgraph.KGraphHeuristic;
 import algorithms.kgraph.KGraphSA;
 
 @SuppressWarnings("unused")
-public class EvoGraph extends JApplet implements ActionListener {
+public class EvoGraph extends JApplet {
 	private static final long serialVersionUID = 1L;
-	GraphCanvas canvas;
-	JButton nextButton;
-	JLabel statusBar;
+	
 	IncrementalGraphAlgorithm algorithm;
 	public static double angularResolutionMultiplier = 1;
 	public static double edgeFitnessMultiplier = 1;
-	public static double edgeTunnelingMultiplier = 0;
-	public static double edgeCrossingsMultiplier = 1000;
+	public static double edgeTunnelingMultiplier = 1;
+	public static double edgeCrossingsMultiplier = 1;
 	public static double nodeSeparationMultiplier = 1;
 	public static double orthogonalityMultiplier = 0;
+	public static double optimalEdgeLength;
+	public static int canvasWidth;
+	public static int canvasHeight;
 	
-	public static String rgf = "k19";
-	public static double optimalFitness = 5.01;
+	public boolean converged = false;
 	
 	public static int[] cnLowerBounds = {0,0,0,0,0,1,3,9,19,36,62,102,153,229,324,447,603,
 										798,1029,1318,1657,2055,2528,3077,3699,4430,5250,6180,
 										7233,8419,9723,11207,12827,14626,16580,18776,21123,23759,
 										26569,29661,32987,36632,40488,44744,49238,54117,59311,64933,
 										70836,77268,84012}; //50
-	
-	public Graph rawGraph;
 	public LinkedList<Double> readings;
 	public int nRestarts = 0;
 	public int queueLength = 25;
@@ -57,150 +56,38 @@ public class EvoGraph extends JApplet implements ActionListener {
 	public long startTime;
 	public Clock clock;
 	
-	public boolean optimalFound = false;
-	public boolean converged = false;
 	
 	public void init() {
 		clock = new Clock();
-		readings = new LinkedList<Double>();
-		rawGraph = new FileToGraph(rgf + ".rgf").createGraph();
-		algorithm = new KGraphSA(rawGraph);
-		//algorithm = new GeneticAlgorithm(rawGraph);
-		//algorithm = new SimulatedAnnealing(new FileToGraph("david-fig11.rgf").createGraph());
-		//algorithm = new HillClimber(new FileToGraph("complex-octo.rgf").createGraph());
-		//algorithm = new ALPS(rawGraph);
-		createGUI();
 	}
 
-	public void createGUI() {
-		canvas = new GraphCanvas(this);
-		nextButton = new JButton("Next");
-		nextButton.addActionListener(this);
-		statusBar = new JLabel(" ");
-	    getContentPane().add(canvas, BorderLayout.CENTER);
-	    getContentPane().add(nextButton, BorderLayout.SOUTH);
-	    getContentPane().add(statusBar, BorderLayout.NORTH);
-		this.resize(900, 750);
+	public Graph testGraph() { //complex-octo
+		Graph g = new Graph(13);
+		g.createEdge(0, 1);
+		g.createEdge(1, 2);
+		g.createEdge(2, 3);
+		g.createEdge(3, 4);
+		g.createEdge(4, 5);
+		g.createEdge(5, 6);
+		g.createEdge(6, 7);
+		g.createEdge(7, 0);
+		g.createEdge(8, 9);
+		g.createEdge(8, 10);
+		g.createEdge(8, 11);
+		g.createEdge(8, 12);
+		g.createEdge(9, 0);
+		g.createEdge(9, 1);
+		g.createEdge(10, 2);
+		g.createEdge(10, 3);
+		g.createEdge(11, 4);
+		g.createEdge(11, 5);
+		g.createEdge(12, 6);
+		g.createEdge(12, 7);
+		return g;
 	}
 	
-	public void next() {
-		canvas.setCanvasWidthAndHeight();
-		canvas.calculateOptimalEdgeLength();
-		
-//		clock.init();
-//		for (int i = 0; i < 5; i++)
-		//algorithm.next();
-		//canvas.drawGraph(algorithm.displayGraph());
-		//statusBar.setText(algorithm.displayText());
-//		System.out.println("total time for 5 runs = " + clock.diff() + " ms");
-		
-		//runAllAlgorithms(1);
-		
-		runKGraphs(24, 24, 20); //starting k, ending k, maximum # runs
-
-//		for (int i = 0; i < 5; i++)
-//			algorithm.next();
-//		for (int i = 0; i < 1000; i++) {
-//			algorithm.restart();
-//			dataCollector = new DataCollector(algorithm.getClass().getSimpleName(), rgf, i + 1);
-//			do {
-//				algorithm.next();
-//			} while (checkConverged(algorithm.displayGraph()));
-//			takeReading(algorithm.displayGraph());
-//			dataCollector.close();
-//		}
-	//System.out.println("total time for 10 runs = " + clock.diff() + " ms");
-
-		//canvas.drawGraph(algorithm.displayGraph());
-		//statusBar.setText(algorithm.displayText());
-		//checkOptimalFound();
-//		}
-	}
-	
-	public void runKGraphs(int first, int last, int maxRuns) {
-		int run;
-		boolean foundOptimal;
-		GraphInstance[] bestFound = new GraphInstance[last - first + 1];
-		for (int i = first; i <= last; i++) {
-			run = 0;
-			algorithm = new GeneticAlgorithm(new FileToGraph("k" + i + ".rgf").createGraph());
-			//algorithm = new KGraphGA(new FileToGraph("k" + i + ".rgf").createGraph());
-			//algorithm = new KGraphSA(new FileToGraph("k" + i + ".rgf").createGraph());
-			KDataCollector dc = new KDataCollector("k" + i);
-			while(run < maxRuns) {
-				long startTime = System.currentTimeMillis();
-				run++;
-				readings.clear();
-				queueLength = 30 - (i / 2);
-				//queueLength = 200 - (i * 3);
-				converged = false;
-				GraphInstance graph;
-				do {
-					algorithm.next();
-					graph = algorithm.displayGraph();
-				} while (!konverged(graph, i));
-				dc.writeLine("K" + i + " run " + run + " converged to " + graph.numberOfEdgeCrossings + " in " + (algorithm.getRuns() - readings.size() + 1) + " generations");
-				if(bestFound[i - first] == null || graph.numberOfEdgeCrossings < bestFound[i - first].numberOfEdgeCrossings) {
-					bestFound[i - first] = graph;
-					if(graph.numberOfEdgeCrossings <= cnLowerBounds[i]) {
-						dc.writeLine("Lower bound for K" + i + " found (" + graph.numberOfEdgeCrossings + ")");
-						//break;
-					} else {
-						dc.writeLine("New best for K" + i + " found (" + graph.numberOfEdgeCrossings + ")");
-					}
-				}
-				algorithm.restart();
-				System.out.println("Run took " + (System.currentTimeMillis() - startTime) + " ms");
-			}
-			dc.close();
-			dc = new KDataCollector("best-k" + i);
-			dc.writeLine(bestFound[i - first].printCoordinates(), false);
-			dc.writeLine(bestFound[i - first].printOrientations(), false);
-			dc.close();
-			canvas.drawGraph(bestFound[i - first]);
-		}
-	}
-	
-	public void runAllAlgorithms(int nRuns) {
-		//queueLength = 10;
-		//algorithm = new GeneticAlgorithm(rawGraph);
-		//runUntilOptimalFound(nRuns);	
-
-//		queueLength = 100;
-//		algorithm = new SimulatedAnnealing(rawGraph);
-//		runUntilOptimalFound(nRuns);
-//
-//		queueLength = 100;
-//		algorithm = new HillClimber(rawGraph);
-//		runUntilOptimalFound(nRuns);
-
-		queueLength = 10;
-		algorithm = new ALPS(rawGraph);
-		runUntilOptimalFound(nRuns);
-	}
-	
-	public void runUntilOptimalFound(int nRuns) {
-		System.out.println("Beginning runs for " + algorithm.getClass().getSimpleName());
-		for (int i = 0; i < nRuns; i++) {
-			startTime = System.currentTimeMillis();
-			System.out.println("Run #" + (i + 1));
-			readings.clear();
-			algorithm.restart();
-			dataCollector = new DataCollector(algorithm.getClass().getSimpleName(), rgf, i + 1);
-			do {
-				algorithm.next();
-				if (algorithm.getRuns() % 1000 == 0)
-					takeReading(algorithm.displayGraph());
-				checkOptimalFound();
-			} while(!optimalFound);
-			dataCollector.close();
-			nRestarts = 0;
-		}
-		System.out.println("Finished runs for " + algorithm.getClass().getSimpleName());
-	}
-	
-	public void checkOptimalFound() {
-		optimalFound = algorithm.displayGraph().fitness <= optimalFitness;
+	public void calculateOptimalEdgeLength() {
+		optimalEdgeLength = Math.sqrt(canvasWidth * canvasHeight / Graph.nNodes);
 	}
 	
 	public boolean konverged(GraphInstance graph, int k) {
@@ -231,18 +118,6 @@ public class EvoGraph extends JApplet implements ActionListener {
 		return false;
 	}
 	
-
-	@Override
-	public void actionPerformed(ActionEvent evt) {
-		if (evt.getSource() == nextButton)
-			next();
-	}
-	
-	public void updateGraph() {
-		algorithm.updateGraph();
-		statusBar.setText(algorithm.displayText());
-	}
-	
 	public void restartAlgorithm() {
 		readings.clear();
 		nRestarts++;
@@ -260,7 +135,7 @@ public class EvoGraph extends JApplet implements ActionListener {
 		System.out.println(reading);
 		dataCollector.writeReading(reading);
 	}
-	
+
 	/** Static Helper functions **/
 	
 	public static int boundaryChecker(int coordinate, int maximum) {
@@ -314,8 +189,7 @@ public class EvoGraph extends JApplet implements ActionListener {
 	public static boolean checkEdgeCrossing(NodeInstance a, NodeInstance b, NodeInstance c, NodeInstance d) {
 		if (b == c || d == a || b == d)
 			return false;
-		return Line2D.linesIntersect(a.x, a.y, b.x, b.y, c.x, c.y, d.x, d.y);
-		//return Line2D.linesIntersect(a.realX, a.realY, b.realX, b.realY, c.realX, c.realY, d.realX, d.realY);
+		return Line2D.linesIntersect(a.realX, a.realY, b.realX, b.realY, c.realX, c.realY, d.realX, d.realY);
 	}
 	
 	/**

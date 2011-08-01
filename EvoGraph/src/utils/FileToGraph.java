@@ -1,4 +1,4 @@
-package graph;
+package utils;
 
 import graph.Graph;
 
@@ -33,7 +33,8 @@ public class FileToGraph {
 		    in.close();
 			return graph;
 	    } catch (Exception e) {
-	    	System.err.println("Error: " + e.getMessage());
+	    	//System.out.println("error");
+	    	e.printStackTrace();
 	    	return null;
 	    }	
 	}
