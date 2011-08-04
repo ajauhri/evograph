@@ -1,6 +1,5 @@
 package evograph;
 
-import graph.Graph;
 import graph.GraphInstance;
 
 import java.awt.BorderLayout;
@@ -26,7 +25,6 @@ public class Standalone extends EvoGraph implements ActionListener {
 	public static String rgf = "complex-octo";
 	public static double optimalFitness = 5.01;
 	public boolean optimalFound = false;
-	public Graph rawGraph;
 	
 	public void init() {
 		super.init();

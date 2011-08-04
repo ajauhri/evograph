@@ -41,6 +41,7 @@ public class EvoGraph extends JApplet {
 	public static double optimalEdgeLength;
 	public static int canvasWidth;
 	public static int canvasHeight;
+	public Graph rawGraph;
 	
 	public boolean converged = false;
 	
