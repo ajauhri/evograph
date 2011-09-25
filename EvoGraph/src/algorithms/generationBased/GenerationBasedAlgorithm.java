@@ -8,6 +8,7 @@ import algorithms.StochasticAlgorithm;
 public class GenerationBasedAlgorithm extends StochasticAlgorithm {
 	protected static final int populationSize = 100;
 	protected static final double elitism = 0.1;
+	protected static final int tournamentSize = 5;
 	public int generation = 0;
 	
 	public GenerationBasedAlgorithm(Graph graph) {

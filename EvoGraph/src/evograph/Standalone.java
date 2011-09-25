@@ -15,6 +15,7 @@ import utils.FileToGraph;
 
 import algorithms.generationBased.ALPS;
 import algorithms.generationBased.GeneticAlgorithm;
+import algorithms.generationBased.SimpleGeneticAlgorithm;
 import algorithms.kgraph.KGraphGA;
 
 public class Standalone extends EvoGraph implements ActionListener {
@@ -22,7 +23,7 @@ public class Standalone extends EvoGraph implements ActionListener {
 	GraphCanvas canvas;
 	JButton nextButton;
 	JLabel statusBar;
-	public static String rgf = "complex-octo";
+	public static String rgf = "kaleidoscope";
 	public static double optimalFitness = 5.01;
 	public boolean optimalFound = false;
 	
@@ -31,7 +32,7 @@ public class Standalone extends EvoGraph implements ActionListener {
 		createGUI();
 		readings = new LinkedList<Double>();
 		rawGraph = new FileToGraph(rgf + ".rgf").createGraph();
-		algorithm = new GeneticAlgorithm(rawGraph);
+		algorithm = new SimpleGeneticAlgorithm(rawGraph);
 	}
 	
 	public void createGUI() {
